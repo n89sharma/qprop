@@ -1,0 +1,40 @@
+motor.f
+tqcalc.f
+cdfun.f
+tpdes.f
+gvcalc.f
+
+
+qmil.f
+qprop.f
+qcget.f
+io.f
+spline.f
+bnsolv.f
+
+
+
+what is REAL C(N)?
+what is IMPLICIT REAL ? implicit type. any variable name with the given pattern
+    would be assigned the given type
+LOGICAL is a boolean?
+what is SIGN? sign(a, b) return a with sign of b
+how do subroutines return results? you send variables and they change it
+functions return one number back you say functionName = something
+
+1) variable declaration
+      LOGICAL, CHARACTER, REAL, PARAMETER, INTEGER
+2) INCLUDE statement
+3) WRITE statement/ file output
+4) FORMAT statement
+5) STOP statement
+6) CONTINUE statement
+6) subroutine variable handling. return variables
+7) for loops correction
+8) File input
+9) EQ -1 or EQ +1
+10) NE to 0.0
+11) LE 0.0
+12) Single line if statement
+13) END statement
+14) RETURN statement
