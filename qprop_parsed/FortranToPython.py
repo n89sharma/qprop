@@ -1,4 +1,5 @@
 import re
+import sys
 
 def beginningOfLoopOrConditional(lineContent):
     return  re.match(r'\bPROGRAM\b', lineContent) or\
@@ -14,6 +15,22 @@ def terminationOfLoopOrConditional(lineContent):
     return  re.match(r'\bEND\b', lineContent) or\
             re.match(r'\bENDDO\b', lineContent) or\
             re.match(r'\bENDIF\b', lineContent)
+
+def continueLine(lineContent):
+    reg = re.compile(r'^.*(?P<lineLabel>\d+)\s+CONTINUE.*$')
+    match = reg.match(lineContent)
+    if match:
+        return match.group('lineLabel')
+    else:
+        return False
+
+def doLoopWithLineLabel(lineContent):
+    reg = re.compile(r'^.*DO\s+(?P<lineLabel>\d+).*$')
+    match = reg.match(lineContent)
+    if match:
+        return match.group('lineLabel')
+    else:
+        return False
 
 def partOfMultilineCommand(lineContent):
     if re.match(r'^&', lineContent):
@@ -51,29 +68,40 @@ def addTabs(tempFilePath, formattedFilePath):
     mainList = [[]]
     currLevel = 0
     totalLines = 0
+    doLoopLineLabels = []
     with open(tempFilePath, 'r') as fr:
         for lineNumber, lineContent in enumerate(fr):
             lineContent = lineContent.strip()
-            try:
-                if(beginningOfLoopOrConditional(lineContent)):
-                    mainList[currLevel].append((lineNumber, lineContent))
-                    currLevel += 1
-                    if len(mainList) == currLevel:
-                        mainList.append([])
 
-                elif(intermediateConditionalStatements(lineContent)):
-                    mainList[currLevel - 1].append((lineNumber, lineContent))
+            # try:
+            lineLabelLoop       = doLoopWithLineLabel(lineContent)
+            lineLabelContinue   = continueLine(lineContent)
 
-                elif(terminationOfLoopOrConditional(lineContent)):
-                    mainList[currLevel - 1].append((lineNumber, lineContent))
-                    currLevel -= 1
+            if(beginningOfLoopOrConditional(lineContent)):
+                mainList[currLevel].append((lineNumber, lineContent))
+                currLevel += 1
+                if len(mainList) == currLevel:
+                    mainList.append([])
 
-                else:
-                    mainList[currLevel].append((lineNumber, lineContent))
-            except:
-                print 'ERROR!'
-                print 'currLevel ', currLevel
-                print lineNumber, lineContent
+                if lineLabelLoop:
+                    doLoopLineLabels.append(lineLabelLoop)
+
+            elif(intermediateConditionalStatements(lineContent)):
+                mainList[currLevel - 1].append((lineNumber, lineContent))
+
+            elif(terminationOfLoopOrConditional(lineContent) or
+                    (lineLabelContinue and
+                    lineLabelContinue in doLoopLineLabels)):
+                mainList[currLevel - 1].append((lineNumber, lineContent))
+                currLevel -= 1
+
+            else:
+                mainList[currLevel].append((lineNumber, lineContent))
+            # except:
+            #     print sys.exc_info()
+            #     print 'ERROR!'
+            #     print 'currLevel ', currLevel
+            #     print lineNumber, lineContent
 
             totalLines = lineNumber
 
@@ -91,11 +119,11 @@ def replaceCommands(tempFilePath, formattedFilePath):
         for line in rf:
             pline = line
             pline = pline.replace('!', '#')
-            pline = re.sub(r'^(?P<tab>\t*)[Cc]+(?P<commentValue>(?![a-zA-Z0-9]).*)$',                                           '\g<tab>#\g<commentValue>',                                             pline)
+            pline = re.sub(r'^(?P<tab>\t*)[Cc]+(?P<commentValue>(?![a-zA-Z0-9\(]).*)$',                                           '\g<tab>#\g<commentValue>',                                             pline)
             pline = re.sub(r'^(?P<tab>\t*)PROGRAM\s+(?P<programName>\w+).*$',                                                   '\g<tab>def \g<programName> ():',                                       pline)
             pline = re.sub(r'^(?P<tab>\t*)SUBROUTINE\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                '\g<tab>def \g<routineName> (\g<routineParameters>):',                  pline)
             pline = re.sub(r'^(?P<tab>\t*)DATA\s+(?P<variableName>\w+)\s+/(?P<variableValue>.*)/.*$',                           '\g<tab>\g<variableName> = \g<variableValue>',                          pline)
-            pline = re.sub(r'^(?P<tab>\t*)DO\s+(?P<variableName>\w+)\s*=\s*(?P<fromNum>[\d\w]+)\s*,\s*(?P<toNum>[\d\w]+).*$',  '\g<tab>for \g<variableName> in range( \g<fromNum>, \g<toNum> ):',       pline)
+            pline = re.sub(r'^(?P<tab>\t*)DO\s+(?P<variableName>\w+)\s*=\s*(?P<fromNum>[\d\w]+)\s*,\s*(?P<toNum>[\d\w]+).*$',   '\g<tab>for \g<variableName> in range( \g<fromNum>, \g<toNum> ):',      pline)
             pline = re.sub(r'^(?P<tab>\t*)CALL\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                      '\g<tab>\g<routineName> (\g<routineParameters>)',                       pline)
             pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>.*)\)\s*THEN.*$',                                        '\g<tab>if (\g<logicalComparison>):',                                   pline)
             pline = re.sub(r'^(?P<tab>\t*)ELSEIF\s*\((?P<logicalComparison>.*)\)\s*THEN.*$',                                    '\g<tab>elif (\g<logicalComparison>):',                                 pline)
@@ -116,29 +144,73 @@ def replaceCommands(tempFilePath, formattedFilePath):
             pline = re.sub(r'\.OR\.',       ' or ',     pline)
             pline = re.sub(r'\.AND\.',      ' and ',    pline)
 
-            # pline = re.sub(r'^WRITE\(\*,\*\)$', 'print \'\'', pline)
-            # pline = re.sub(r'WRITE\(\*,\*\)', 'print', pline)
-            # pline = re.sub(r'^\t*STOP', '#STOP', pline)
-            # pline = re.sub(r'^\t*RETURN', '#RETURN', pline)
-            # pline = re.sub(r'^\t*END', '#END', pline)
+            pline = re.sub(r'^(?P<tab>\t*)WRITE\s*\(\s*\*\s*,\s*\*\s*\)(?P<printVariables>.*)$', '\g<tab>print \g<printVariables>', pline)
+            pline = re.sub(r'^(?P<tab>\t*)DO\s+\d+\s+(?P<variableName>\w+)\s*=\s*(?P<firstParameter>[\-\+\d\w]+)\s*,\s*(?P<secondParameter>[\-\+\d\w]+).*$', '\g<tab>for \g<variableName> in range( \g<firstParameter>, \g<secondParameter> ):', pline)
+            pline = re.sub(r'^(?P<tab>\t*)DO\s+\d+\s+(?P<variableName>\w+)\s*=\s*(?P<firstParameter>[\-\+\d\w]+)\s*,\s*(?P<secondParameter>[\-\+\d\w]+)\s*,\s*(?P<thirdParameter>[-+\d]+).*$', '\g<tab>for \g<variableName> in range( \g<firstParameter>, \g<secondParameter>, \g<thirdParameter> ):', pline)
+            pline = re.sub(r'^(?P<tab>\t*)(?P<lineLabel>\d+)\s+(?P<formatLine>CONTINUE.*)$', '\g<tab>#\g<lineLabel> CONTINUE', pline)
+
+            pline = re.sub(r'^(?P<tab>\t*)STOP',        '\g<tab>raise SystemExit',  pline)
+            pline = re.sub(r'^(?P<tab>\t*)RETURN',      '\g<tab>return',            pline)
+            pline = re.sub(r'^(?P<tab>\t*)END',         '\g<tab>#END',              pline)
             # pline = re.sub(r'^\t*REAL', '#REAL', pline)
+            # pline = re.sub(r'WRITE\(\*,\*\)', 'print', pline)
+            # pline = re.sub(r'^WRITE\(\*,\*\)$', 'print \'\'', pline)
 
             pythonLines.append(pline)
 
     writeListToFile(pythonLines, formattedFilePath)
 
+def extractFormattingLines(filePaths, outputResultFile):
+
+    writeRegex      = re.compile(r'^\s*WRITE\s*\(\s*.*\s*,\s*(?P<formatLineLabel>\d+)\s*\).*$')
+    formatRegex     = re.compile(r'^\s*(?P<lineLabel>\d+)\s+(?P<formatLine>FORMAT.*)$')
+
+    for filePath in filePaths:
+
+        fileData    = []
+        lineLabels  = {}
+
+        with open(filePath, 'r') as fr:
+            for lineNumber, lineContent in enumerate(fr):
+                writeMatch  = writeRegex.match(lineContent)
+                formatMatch = formatRegex.match(lineContent)
+                if writeMatch:
+                    lineLabel = writeMatch.group('formatLineLabel')
+                    if not (lineLabel in lineLabels):
+                        lineLabels[lineLabel] = {'usages':[], 'format':''}
+                    lineLabels[lineLabel]['usages'].append((lineNumber, lineContent))
+                elif formatMatch:
+                    lineLabel = formatMatch.group('lineLabel')
+                    formatLine = formatMatch.group('formatLine')
+                    if not (lineLabel in lineLabels):
+                        lineLabels[lineLabel] = {'usages':[], 'format':''}
+                    lineLabels[lineLabel]['format'] = (lineNumber, formatLine)
+
+        with open(outputResultFile, 'a') as fw:
+            fw.write('\n')
+            fw.write(filePath + '\n')
+            fw.write('\n')
+            for key in lineLabels:
+                fw.write(key + '\n')
+                fw.write(str(lineLabels[key]['format']) + '\n')
+                for usage in lineLabels[key]['usages']:
+                    fw.write('\t' + str(usage) + '\n')
+
 if __name__ == '__main__':
     sourceFilePath      = 'qprop_source/src/motor.f'
     sourceFilePath      = 'qprop_source/src/spline.f'
+    sourceFilePath      = 'qprop_source/src/qmil.f'
+
+
+    sourceFilePath      = 'qprop_source/src/bnsolv.f'
     sourceFilePath      = 'qprop_source/src/qprop.f'
     tempFilePath        = 'qprop_parsed/parsedFile1.f'
-    tempFilePath2       = 'qprop_parsed/parsedFile2.f'
+    tempFilePath2       = 'qprop_parsed/parsedFile2.py'
     formattedFilePath   = 'qprop_parsed/finalParsedFile.py'
 
+
+
     collapseMultiLines(sourceFilePath, tempFilePath)
+    # extractFormattingLines([tempFilePath], 'qprop_parsed/formattingLines.txt')
     addTabs(tempFilePath, tempFilePath2)
     replaceCommands(tempFilePath2, formattedFilePath)
-    pline = 'IF(FILNAM.EQ.0.2) GO TO 18'
-    pline = re.sub(r'(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>\-*\d+\.\d+).*', 'isClose(\g<variableName>, \g<variableValue>)',                         pline)
-
-    print pline

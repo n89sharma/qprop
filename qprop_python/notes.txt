@@ -1,3 +1,20 @@
+Gfortrn gcc compilers options are given below:
+
+fno-signed-zeros was taken from:
+https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+-default-real-8 was taken from:
+https://gcc.gnu.org/onlinedocs/gfortran/Fortran-Dialect-Options.html
+
+intels compiler had the -0 and -r8 options that were given initially.
+https://software.intel.com/sites/default/files/m/f/8/5/8/0/6366-ifort.txt
+
+tests havent been compiled.
+3 runs were done. 3rd one threw an error related to double precision "underflow"?
+
+Prop
+http://web.mit.edu/drela/Public/web/qprop/
+
+
 motor.f
 tqcalc.f
 cdfun.f
@@ -22,19 +39,452 @@ what is SIGN? sign(a, b) return a with sign of b
 how do subroutines return results? you send variables and they change it
 functions return one number back you say functionName = something
 
-1) variable declaration
-      LOGICAL, CHARACTER, REAL, PARAMETER, INTEGER
-2) INCLUDE statement
+Create a tree of which function calls which other function?
+
+13) END statement
+5) STOP statement
+
 3) WRITE statement/ file output
 4) FORMAT statement
-5) STOP statement
-6) CONTINUE statement
 6) subroutine variable handling. return variables
+1) variable declaration
+LOGICAL, CHARACTER, REAL, PARAMETER, INTEGER
+
+2) INCLUDE statement
+6) CONTINUE statement
 7) for loops correction
 8) File input
 9) EQ -1 or EQ +1
 10) NE to 0.0
 11) LE 0.0
 12) Single line if statement
-13) END statement
 14) RETURN statement
+
+
+29 subroutines
+
+SUBROUTINE BNSOLV(A,B,C,R,NB,N,NRHS,NRMAX)
+DIMENSION A(NB,NB,N), B(NB,NB,N), C(NB,NB,N), R(NB,NRMAX,N)
+C     **********************************************************************
+C      This routine solves an N-long block-tridiagonal system with NBxNB
+C      blocks, and with NRHS righthand sides by a standard block elimination
+C      scheme.  The solutions are returned in the Rj vectors.
+C
+C      |A C      ||d|   |R..   |
+C      |B A C    ||d|   |R..   |
+C      |  B . .  ||.| = |R.....|
+C      |    . . C||.|   |R..   |
+C      |      B A||d|   |R..   |
+C                                                  Mark Drela   10 June 89
+C     **********************************************************************
+
+SUBROUTINE GVCALC(CHORD,BETA,R,
+&                BLDS,RAD,VEL,OMG,VSO,
+&                CL0,DCLDA,CLMIN,CLMAX,MCRIT,
+&                GAM,GAM_VEL,GAM_OMG,GAM_CH,GAM_BE,
+&                 VA, VA_VEL, VA_OMG, VA_CH, VA_BE,
+&                 VT, VT_VEL, VT_OMG, VT_CH, VT_BE,
+&                 CL, CL_VEL, CL_OMG, CL_CH, CL_BE, STALL, LCONV)
+IMPLICIT REAL (A-H,M,O-Z)
+LOGICAL STALL, LCONV
+C--------------------------------------------------------------
+C     Computes circulation and related section properties
+C     at one radial station.  Uses local circulation/swirl
+C     relation with a modified Prandtl's tip fudge factor.
+C     Does not make light-loading approximations, and
+C     is consistent with actuator disk theory in the limit
+C     of zero forward velocity.
+C
+C  Input   CHORD   local blade chord
+C          BETA    local blade angle  (radians)
+C          R       local radius
+C
+C          BLDS    number of blades
+C          RAD     tip radius  (for Prandtl's factor)
+C          VEL     forward flight speed
+C          OMG     rotational speed  (radians/time)
+C          VSO     speed of sound
+C
+C          CL0     constants for CL(alpha,M) function
+C          DCLDA
+C          CLMIN
+C          CLMAX
+C          MCRIT
+C
+C  Output  GAM     circulation
+C          VA      axial induced velocity
+C          VT      tangential induced velocity
+C          CL      section lift coefficient
+C          STALL   T if alpha is outside stall limits
+C          LCONV   F if iteration did not converge
+C
+C          ()_VEL  derivatives  d()/dVEL
+C          ()_OMG  derivatives  d()/dOMG
+C          ()_CH   derivatives  d()/dCHORD
+C          ()_BE   derivatives  d()/dBETA
+C--------------------------------------------------------------
+C
+
+SUBROUTINE DCDFUN(    BE,    WA,    WT, CLCD0,CL0,DCLDA,
+&              DCD,DCD_BE,DCD_WA,DCD_WT )
+C
+A    = BE - ATAN2(WA,WT)
+A_BE = 1.0
+A_WA = -WT/(WA**2 + WT**2)
+A_WT =  WA/(WA**2 + WT**2)
+C
+ACD0 = (CLCD0-CL0)/DCLDA
+DCD   = 2.0*SIN(A-ACD0)**2
+DCD_A = 4.0*SIN(A-ACD0)*COS(A-ACD0)
+C
+DCD_BE = DCD_A*A_BE
+DCD_WA = DCD_A*A_WA
+DCD_WT = DCD_A*A_WT
+C
+RETURN
+END ! DCDFUN
+
+SUBROUTINE CDFUN(CL,   RE,   MA, CLCD0,CD0,CD2,REREF,REEXP, MCRIT,
+&           CD,CD_CL,CD_RE,CD_MA )
+REAL MA, MCRIT
+C
+DATA CDMF / 10.0 /
+DATA IEXP / 3 /
+C
+C---- CD-scaling factor
+FAC = (RE/REREF)**REEXP
+FAC_RE = REEXP*FAC/RE
+C
+C---- CD(CL;Re) function
+CLB = CL - CLCD0
+CD    = (CD0 + CD2*CLB**2 )*FAC
+CD_CL = (      CD2*CLB*2.0)*FAC
+CD_RE = (CD0 + CD2*CLB**2 )*FAC_RE
+CD_MA = 0.
+C
+IF(MA .GT. MCRIT) THEN
+ CD    = CD    + CDMF*(MA-MCRIT)** IEXP
+ CD_MA = CD_MA + CDMF*(MA-MCRIT)**(IEXP-1) * FLOAT(IEXP)
+ENDIF
+C
+RETURN
+END ! CDFUN
+
+
+
+SUBROUTINE TPDES(TDES1,PDES1, RHO,VEL,OMG, RAD,BLDS,
+&                 N, R,DR, CL,CD, CL0,DCLDA,
+&                 GAM, CH, BETA, ADW)
+C---------------------------------------------------------------
+C     Computes approximate propeller geometry
+C     using a modified Larrabee algorithm
+C
+C  Input:
+C      TDES1    prescribed thrust (0 if power prescribed)
+C      PDES1    prescribed power  (0 if thrust prescribed)
+C                (if both TDES1=PDES1=0.0, impose maximum windmill power)
+C      RHO      density
+C      VEL      freestream velocity
+C      OMG      rotation rate,  in radians/time-unit
+C      RAD      tip radius
+C      BLDS     number of blades
+C
+C      N        number of radial stations
+C      R(.)     radii where geometry is to be defined
+C      DR(.)    integration radius intervals,   Int [ ] dr  =  Sum [ ]_i DR(i)
+C      CL(.)    prescribed CL
+C      CD(.)    prescribed CD
+C      CL0(.)   zero-lift angle
+C      DCLDA(.) 2D lift-curve slope  dcl/da
+C
+C  Output:
+C     GAM(.)    circulation
+C     CH(.)     chord
+C     BETA(.)   pitch angle (radians)
+C     ADW       wake advance ratio
+C
+C---------------------------------------------------------------
+
+SUBROUTINE TQCALC(N,C,B,R,DR,
+&              VA,VT,CL,CD,STALL,
+&              BLDS,RAD,VEL,OMG,DBE,
+&              RHO,RMU,VSO,
+&              CL0,DCLDA,CLMIN,CLMAX,MCRIT,
+&              CD0,CD2U,CD2L,CLCD0,REREF,REEXP,
+&              TP, TP_VEL, TP_OMG, TP_DBE, TP_C, TP_B,
+&              QP, QP_VEL, QP_OMG, QP_DBE, QP_C, QP_B )
+IMPLICIT REAL(A-H,M,O-Z)
+REAL C(N), B(N), R(N), DR(N)
+REAL CL0(N), DCLDA(N), CLMIN(N), CLMAX(N), MCRIT(N)
+REAL CD0(N), CD2U(N), CD2L(N)
+REAL CLCD0(N)
+REAL REREF(N), REEXP(N)
+C
+REAL VA(N), VT(N), CL(N), CD(N)
+REAL TP_C(N), TP_B(N),
+&     QP_C(N), QP_B(N)
+LOGICAL STALL(N)
+C
+C-----------------------------------------------------
+C     Computes propeller thrust and torque
+C     by integrating forces along radius.
+C
+C
+C  Input   N      number of radial stations  i = 1..N
+C          C(i)   chords
+C          B(i)   angles (radians)
+C          R(i)   radii
+C          DR(i)  radius interval for i station
+C
+C          BLDS    number of blades
+C          RAD     tip radius  (for Prandtl's factor)
+C          VEL     forward flight speed
+C          OMG     rotational speed  (radians/time)
+C          DBE     delta(B) to be added to all B(i) angles
+C
+C          RHO     fluid density
+C          RMU     fluid viscosity
+C
+C          CL0(i)     constants for CL(alpha,M) function
+C          DCLDA(i)
+C          CLMIN(i)
+C          CLMAX(i)
+C          MCRIT(i)
+C
+C          CD0(i)     constant  coefficient for CD(CL) function
+C          CD2(i)     quadratic coefficient for CD(CL) function
+C          CLCD0(i)   CL at minimum drag point (where CD=CD0)
+C          REREF(i)   reference Reynolds number where CD(CL) applies
+C          REEXP(i)   Re-scaling exponent:   CD ~ (Re/REREF)^REEXP
+C
+C
+C  Output  VA(i)    axial induced velocity
+C          VT(i)    tangential induced velocity
+C          CL(i)    section lift coefficient
+C          CD(i)    section drag coefficient
+C          STALL(i) T if alpha is outside stall limits
+C
+C          TP       prop thrust
+C          QP       prop torque
+C          ()_VEL   derivatives  d()/dVEL
+C          ()_OMG   derivatives  d()/dOMG
+C          ()_DBE   derivatives  d()/dDBE
+C          ()_C(i)  derivatives  d()/dC(i)
+C          ()_B(i)  derivatives  d()/dB(i)
+C
+C-----------------------------------------------------
+
+
+SUBROUTINE VOLTM(  OMEGA,      Q, IMOTYPE, PARMOT,NMPAR,
+&        VOLT, VOLT_OMEGA, VOLT_Q,
+&        AMPS, AMPS_OMEGA, AMPS_Q )
+C-----------------------------------------------------------
+C     Motor+gearbox   Voltage(rpm,torque)  function.
+C     Inverts MOTORQ's torque(rpm,Voltage)  function
+C       via Newton iteration.
+C
+C Input:  OMEGA      output shaft rotation rate  (radians/s)
+C         Q          output shaft torque   (N-m)
+C         IMOTYPE    specifies type of motor model to be used
+C         PARMOT(.)  motor parameters  (lines 3,4... in motor file)
+C         NMPAR      number of motor parameters in motor file
+C
+C Output: VOLT       terminal voltage
+C         VOLT_OMEGA dVOLT/dOMEGA  function derivative
+C         VOLT_Q     dVOLT/dQ      function derivative
+C         AMPS       current
+C         AMPS_OMEGA dAMPS/dOMEGA  function derivative
+C         AMPS_Q     dAMPS/dQ      function derivative
+C
+C-----------------------------------------------------------
+
+SUBROUTINE MOTORQ(  OMEGA,   VOLT, IMOTYPE, PARMOT,NMPAR,
+&               Q, Q_OMEGA, Q_VOLT,
+&               I, I_OMEGA, I_VOLT )
+C-----------------------------------------------------------
+C     Motor+gearbox   torque(rpm,Voltage)  function.
+C
+C Input:  OMEGA      output shaft rotation rate  radians/s
+C         VOLT       terminal voltage (or throttle for IC motors)
+C         IMOTYPE    specifies type of motor model to be used
+C         PARMOT(.)  motor parameters  (lines 3,4... in motor file)
+C         NMPAR      number of motor parameters in motor file
+C
+C Output: Q          output shaft torque   (N-m)
+C         Q_OMEGA    dQ/dOMEGA  function derivative
+C         Q_VOLT     dQ/dVOLT   function derivative
+C         I          motor current (or fuel flow for IC motors)
+C         I_OMEGA    dI/dOMEGA  function derivative
+C         I_VOLT     dI/dVOLT   function derivative
+C
+C-----------------------------------------------------------
+
+SUBROUTINE NEARPT(XPNT,YPNT,SNEAR,X,XP,Y,YP,S,N)
+IMPLICIT REAL (A-H,M,O-Z)
+DIMENSION X(N),XP(N),Y(N),YP(N),S(N)
+C========================================================
+C     Finds arc length position S=SNEAR of a point
+C     on a 2-D splined curve X(S),Y(S) nearest the
+C     specified point XPNT,YPNT.
+C
+C     Assumes the value passed in via SNEAR is a good
+C     initial guess.
+C========================================================
+
+
+SUBROUTINE INTERS(OK,SS1,SS2,
+&                  X1,XS1,Y1,YS1,S1,N1,
+&                  X2,XS2,Y2,YS2,S2,N2 )
+LOGICAL OK
+DIMENSION X1(N1),XS1(N1),Y1(N1),YS1(N1),S1(N1)
+DIMENSION X2(N2),XS2(N2),Y2(N2),YS2(N2),S2(N2)
+C-------------------------------------------------------
+C     Finds spline coordinate values SS1, SS2 at the
+C     intersection of two space curves (X1,Y1), (X2,Y2).
+C-------------------------------------------------------
+
+SUBROUTINE SEGSPD(X,XS,S,N,XS1,XS2)
+DIMENSION X(N),XS(N),S(N)
+C-----------------------------------------------
+C     Splines X(S) array just like SPLIND,      |
+C     but allows derivative discontinuities     |
+C     at segment joints.  Segment joints are    |
+C     defined by identical successive S values. |
+C-----------------------------------------------
+
+SUBROUTINE SEGSPL(X,XS,S,N)
+DIMENSION X(N),XS(N),S(N)
+C-----------------------------------------------
+C     Splines X(S) array just like SPLINE,      |
+C     but allows derivative discontinuities     |
+C     at segment joints.  Segment joints are    |
+C     defined by identical successive S values. |
+C-----------------------------------------------
+C
+
+SUBROUTINE SCALC(X,Y,S,N)
+DIMENSION X(N),Y(N),S(N)
+C----------------------------------------
+C     Calculates the arc length array S  |
+C     for a 2-D array of points (X,Y).   |
+C----------------------------------------
+C
+
+SUBROUTINE SINVRT(SI,XI,X,XS,S,N)
+DIMENSION X(N),XS(N),S(N)
+C----------------------------------------------------
+C     Calculates the "inverse" spline function S(X). |
+C     Since S(X) can be multi-valued or not defined, |
+C      this is not a "black-box" routine.  The call- |
+C      ing program must pass via SI a sufficiently   |
+C      good initial guess for S(XI).                 |
+C                                                    |
+C     XI      specified X value       (input)        |
+C     SI      calculated S(XI) value  (input,output) |
+C     X,XS,S  usual spline arrays     (input)        |
+C                                                    |
+C----------------------------------------------------
+C
+
+SUBROUTINE SEVLIN(SS,X,S,N, XX,XXS)
+DIMENSION X(N),S(N)
+C------------------------------------------------------------
+C     Calculates X(SS) and dX/ds(SS) using piecewise-linear  |
+C     interpolation. This is intended for intepolating very  |
+C     noisy data for which a cubic spline is inappropriate.  |
+C------------------------------------------------------------
+
+SUBROUTINE SEVALL(SS,X,XS,S,N,
+&                  XX, XXS, XXSS )
+DIMENSION X(N),XS(N),S(N)
+C--------------------------------------------------
+C     Calculates all spline derivatives.           |
+C     (Combines SEVAL, DEVAL, D2VAL)               |
+C     XS array must have been calculated by SPLINE |
+C--------------------------------------------------
+
+SUBROUTINE TRISOL(A,B,C,D,KK)
+DIMENSION A(KK),B(KK),C(KK),D(KK)
+C-----------------------------------------
+C     Solves KK long, tri-diagonal system |
+C                                         |
+C             A C          D              |
+C             B A C        D              |
+C               B A .      .              |
+C                 . . C    .              |
+C                   B A    D              |
+C                                         |
+C     The righthand side D is replaced by |
+C     the solution.  A, C are destroyed.  |
+C-----------------------------------------
+
+SUBROUTINE SPLINA(X,XS,S,N)
+DIMENSION X(N),XS(N),S(N)
+LOGICAL LEND
+C-------------------------------------------------------
+C     Calculates spline coefficients for X(S) by a      |
+C     simple averaging of adjacent segment slopes.      |
+C                                                       |
+C     Interpolated X(S) is less likely to oscillate     |
+C     than with SPLINE, but does not have continuity    |
+C     in curvature.                                     |
+C                                                       |
+C     To evaluate the spline at some value of S,        |
+C     use SEVAL and/or DEVAL.                           |
+C                                                       |
+C     S        independent variable array (input)       |
+C     X        dependent variable array   (input)       |
+C     XS       dX/dS array                (calculated)  |
+C     N        number of points           (input)       |
+C                                                       |
+C-------------------------------------------------------
+
+SUBROUTINE SPLIND(X,XS,S,N,XS1,XS2)
+DIMENSION X(N),XS(N),S(N)
+PARAMETER (NMAX=5001)
+DIMENSION A(NMAX),B(NMAX),C(NMAX)
+C-------------------------------------------------------
+C     Calculates spline coefficients for X(S).          |
+C     Same as SPLINE, but also allows specified-slope   |
+C     or zero-curvature end conditions to be imposed.   |
+C                                                       |
+C     To evaluate the spline at some value of S,        |
+C     use SEVAL and/or DEVAL.                           |
+C                                                       |
+C     S        independent variable array (input)       |
+C     X        dependent variable array   (input)       |
+C     XS       dX/dS array                (calculated)  |
+C     N        number of points           (input)       |
+C     XS1,XS2  endpoint derivatives       (input)       |
+C              If =  999.0, then usual zero second      |
+C              derivative end condition(s) are used     |
+C              If = -999.0, then zero third             |
+C              derivative end condition(s) are used     |
+C                                                       |
+C     Note: specifying both XS1,XS2 = -999.0            |
+C           is equivalent to using SPLINE.              |
+C                                                       |
+C-------------------------------------------------------
+
+SUBROUTINE SPLINE(X,XS,S,N)
+DIMENSION X(N),XS(N),S(N)
+PARAMETER (NMAX=5001)
+DIMENSION A(NMAX),B(NMAX),C(NMAX)
+C-------------------------------------------------------
+C     Calculates spline coefficients for X(S).          |
+C     Natural end conditions are used (zero 3rd         |
+C      derivative over first, last intervals).          |
+C                                                       |
+C     To evaluate the spline at some value of S,        |
+C     use SEVAL and/or DEVAL.                           |
+C                                                       |
+C     S        independent variable array (input)       |
+C     X        dependent variable array   (input)       |
+C     XS       dX/dS array                (calculated)  |
+C     N        number of points           (input)       |
+C                                                       |
+C-------------------------------------------------------
+
+SUBROUTINE QCGET(RHO,RMU,VSO)
+CHARACTER*80 FNAME,LINE
+LOGICAL ERROR

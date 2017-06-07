@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  bnsolv.f
-C 
-C    Copyright (C) 2005 Mark Drela 
-C 
+C
+C    Copyright (C) 2005 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -58,7 +58,7 @@ C                                                              -1
 CCC---- multiply Ci block and righthand side Ri vectors by (Ai)
 C       using Gaussian elimination.
 C
-   12   DO 13 KPIV=1, NB-1
+      DO 13 KPIV=1, NB-1
           KP1 = KPIV+1
 C
 C-------- find max pivot index KX
