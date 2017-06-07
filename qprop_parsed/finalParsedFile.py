@@ -685,12 +685,12 @@ def QPROP ():
 		raise SystemExit
 	#ENDIF
 	#
-	LRPMSET  = NRPM  > 0  and  (RPM1  != 0.0  or  RPM2  != 0.0)
-	LVOLTSET = NVOLT > 0  and  (VOLT1 != 0.0  or  VOLT2 != 0.0)
-	LTHRUSET = NTHRU > 0  and  (THRU1 != 0.0  or  THRU2 != 0.0)
-	LTORQSET = NTORQ > 0  and  (TORQ1 != 0.0  or  TORQ2 != 0.0)
-	LAMPSSET = NAMPS > 0  and  (AMPS1 != 0.0  or  AMPS2 != 0.0)
-	LPELESET = NPELE > 0  and  (PELE1 != 0.0  or  PELE2 != 0.0)
+	LRPMSET  = NRPM  > 0  and  ( not isClose(RPM1, 0.0)  or  not isClose(RPM2, 0.0) )
+	LVOLTSET = NVOLT > 0  and  ( not isClose(VOLT1, 0.0)  or  not isClose(VOLT2, 0.0) )
+	LTHRUSET = NTHRU > 0  and  ( not isClose(THRU1, 0.0)  or  not isClose(THRU2, 0.0) )
+	LTORQSET = NTORQ > 0  and  ( not isClose(TORQ1, 0.0)  or  not isClose(TORQ2, 0.0) )
+	LAMPSSET = NAMPS > 0  and  ( not isClose(AMPS1, 0.0)  or  not isClose(AMPS2, 0.0) )
+	LPELESET = NPELE > 0  and  ( not isClose(PELE1, 0.0)  or  not isClose(PELE2, 0.0) )
 	#
 	#    write(*,*)
 	#   &  lrpmset, lvoltset, lthruset, ltorqset, lampsset, lpeleset
@@ -1164,13 +1164,13 @@ def QPROP ():
 					#
 					PINPUT = VOLT*AMPS
 					#
-					if (POWER != 0.0):
+					if ( not isClose(POWER, 0.0) ):
 						EFFP = PPROP/POWER
 					else:
 						EFFP = 0.
 					#ENDIF
 					#
-					if (PINPUT != 0.0):
+					if ( not isClose(PINPUT, 0.0) ):
 						EFFM = POWER/PINPUT
 					else:
 						EFFM = 0.0
@@ -1225,7 +1225,7 @@ def QPROP ():
 				IRE = INT( RHO*W*C(I)/RMU + 0.5 )
 				#
 				#------- local wake advance ratio, induced and profile efficiencies
-				if (WA!=0.0  and  WT!=0.0):
+				if ( not isClose(WA, 0.0)  and  not isClose(WT, 0.0) ):
 					ADW = (WA/WT) * (R(I)/RAD)
 					EFFI = (VEL/(OMG*R(I))) * (WT/WA)
 					EFFP = (CL(I) - CD(I)*WA/WT)/ (CL(I) + CD(I)*WT/WA)
