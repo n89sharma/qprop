@@ -132,7 +132,7 @@ def replaceCommands(tempFilePath, formattedFilePath):
             pline = re.sub(r'^(?P<tab>\t*)ENDIF.*$',                                                                            '\g<tab>#ENDIF',                                                        pline)
             pline = re.sub(r'^(?P<tab>\t*)ENDDO.*$',                                                                            '\g<tab>#ENDDO',                                                        pline)
             pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>\-*\d+\.\d+)\s*',                            ' isClose(\g<variableName>, \g<variableValue>) ',                       pline)
-            pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>\d+(?!\.))\s*',                              ' \g<variableName> == \g<variableValue> ',                              pline)
+            pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>[\-\+\d]+(?!\.))\s*',                              ' \g<variableName> == \g<variableValue> ',                              pline)
 
             pline = re.sub(r'\.FALSE\.',    'False',    pline)
             pline = re.sub(r'\.TRUE\.',     'True',     pline)

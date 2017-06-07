@@ -263,14 +263,14 @@ def QPROP ():
 	#
 	#---- prop name
 	FREAD (LU,LINE,ILINE,IERR,PNAME)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	#
 	#---- extract parameters on data lines
 	NVAL = 2
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 1) GO TO 980
 	BLDS = RVAL(1)
 	if (NVAL>=2):
@@ -281,8 +281,8 @@ def QPROP ():
 	#
 	NVAL = 2
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 2) GO TO 980
 	for IR in range( 1, IRDIM ):
 		CL0B(IR)   = RVAL(1)
@@ -291,8 +291,8 @@ def QPROP ():
 	#
 	NVAL = 2
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 2) GO TO 980
 	for IR in range( 1, IRDIM ):
 		CLMINB(IR) = RVAL(1)
@@ -301,8 +301,8 @@ def QPROP ():
 	#
 	NVAL = 4
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 3) GO TO 980
 	for IR in range( 1, IRDIM ):
 		CD0B(IR)   = RVAL(1)
@@ -313,8 +313,8 @@ def QPROP ():
 	#
 	NVAL = 2
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 2) GO TO 980
 	for IR in range( 1, IRDIM ):
 		REREFB(IR) = RVAL(1)
@@ -324,8 +324,8 @@ def QPROP ():
 	#
 	NVAL = 3
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 3) GO TO 980
 	RFAC = RVAL(1)
 	CFAC = RVAL(2)
@@ -333,8 +333,8 @@ def QPROP ():
 	#
 	NVAL = 3
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 3) GO TO 980
 	RADD = RVAL(1)
 	CADD = RVAL(2)
@@ -346,8 +346,8 @@ def QPROP ():
 	#
 	NVAL = 13
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 16
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 16
 	IF(NVAL< 3) GO TO 980
 	#
 	KR = KR + 1
@@ -443,14 +443,14 @@ def QPROP ():
 	#
 	#---- motor name
 	FREAD (LU,LINE,ILINE,IERR,MNAME)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	#
 	#---- motor model index
 	NVAL = 1
 	IREAD (LU,LINE,ILINE,IERR,NVAL,IVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 1) GO TO 980
 	IMOTYPE = IVAL(1)
 	#
@@ -458,8 +458,8 @@ def QPROP ():
 	for IMPAR in range( 1, NMPDIM ):
 		NVAL = 1
 		RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-		IF(IERR.EQ.+1) GO TO 900
-		IF(IERR.EQ.-1) GO TO 25
+		IF( IERR == +1 ) GO TO 900
+		IF( IERR == -1 ) GO TO 25
 		IF(NVAL< 1) GO TO 980
 		if (IMPAR.EQ.NMPDIM+1):
 			print  '* Motor parameter array overflow. Increase NMPDIM'
@@ -502,8 +502,8 @@ def QPROP ():
 	#---- extract parameters on data lines
 	NVAL = 3
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 3) GO TO 980
 	VEL1 = RVAL(1)
 	VEL2 = RVAL(2)
@@ -512,8 +512,8 @@ def QPROP ():
 	#---- extract parameters on data lines
 	NVAL = 3
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 3) GO TO 980
 	RPM1 = RVAL(1)
 	RPM2 = RVAL(2)
@@ -522,8 +522,8 @@ def QPROP ():
 	#---- extract parameters on data lines
 	NVAL = 3
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	IF(IERR.EQ.-1) GO TO 950
+	IF( IERR == +1 ) GO TO 900
+	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 3) GO TO 980
 	VOLT1 = RVAL(1)
 	VOLT2 = RVAL(2)
@@ -532,8 +532,8 @@ def QPROP ():
 	#---- extract parameters on data lines
 	NVAL = 3
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	if (IERR.EQ.-1  or  NVAL< 3):
+	IF( IERR == +1 ) GO TO 900
+	if ( IERR == -1  or  NVAL< 3):
 		DBET1 = 0.0
 		DBET2 = 0.0
 		NDBET = 0
@@ -546,8 +546,8 @@ def QPROP ():
 	#
 	NVAL = 3
 	RREAD (LU,LINE,ILINE,IERR,NVAL,RVAL)
-	IF(IERR.EQ.+1) GO TO 900
-	if (IERR.EQ.-1  or  NVAL< 3):
+	IF( IERR == +1 ) GO TO 900
+	if ( IERR == -1  or  NVAL< 3):
 		THRU1 = 0.0
 		THRU2 = 0.0
 		NTHRU = 0
@@ -567,8 +567,8 @@ def QPROP ():
 	#
 	#---- try reading velocity 3rd Unix argument
 	PPARSE (ARGP3,VEL1,VEL2,NVEL,IERR)
-	IF(IERR.EQ.+1) GO TO 80
-	IF(IERR.EQ.-1) GO TO 80
+	IF( IERR == +1 ) GO TO 80
+	IF( IERR == -1 ) GO TO 80
 	#
 	#---- set new default single-point RPM or VOLT
 	RPM1 = 0.
@@ -601,7 +601,7 @@ def QPROP ():
 	#
 	#---- try reading Rpm from 4th Unix argument
 	PPARSE (ARGP4,RPM1,RPM2,NRPM,IERR)
-	if (IERR.EQ.+1  or IERR.EQ.-1     ):
+	if ( IERR == +1  or  IERR == -1 ):
 		# part of multi line command.
 		RPM = 0.0
 		NRPM = 0
@@ -609,7 +609,7 @@ def QPROP ():
 	#
 	#---- try reading Voltage from 5th Unix argument
 	PPARSE (ARGP5,VOLT1,VOLT2,NVOLT,IERR)
-	if (IERR.EQ.+1  or IERR.EQ.-1     ):
+	if ( IERR == +1  or  IERR == -1 ):
 		# part of multi line command.
 		VOLT = 0.0
 		NVOLT = 0
@@ -617,7 +617,7 @@ def QPROP ():
 	#
 	#---- try reading pitch change from 6th Unix argument
 	PPARSE (ARGP6,DBET1,DBET2,NDBET,IERR)
-	if (IERR.EQ.+1  or IERR.EQ.-1     ):
+	if ( IERR == +1  or  IERR == -1 ):
 		# part of multi line command.
 		DBET = 0.0
 		NDBET = 1
@@ -625,7 +625,7 @@ def QPROP ():
 	#
 	#---- try reading thrust from 7th Unix argument
 	PPARSE (ARGP7,THRU1,THRU2,NTHRU,IERR)
-	if (IERR.EQ.+1  or IERR.EQ.-1     ):
+	if ( IERR == +1  or  IERR == -1 ):
 		# part of multi line command.
 		THRU = 0.0
 		NTHRU = 1
@@ -633,7 +633,7 @@ def QPROP ():
 	#
 	#---- try reading torque from 8th Unix argument
 	PPARSE (ARGP8,TORQ1,TORQ2,NTORQ,IERR)
-	if (IERR.EQ.+1  or IERR.EQ.-1     ):
+	if ( IERR == +1  or  IERR == -1 ):
 		# part of multi line command.
 		TORQ = 0.0
 		NTHRU = 1
@@ -641,7 +641,7 @@ def QPROP ():
 	#
 	#---- try reading current from 9th Unix argument
 	PPARSE (ARGP9,AMPS1,AMPS2,NAMPS,IERR)
-	if (IERR.EQ.+1  or IERR.EQ.-1     ):
+	if ( IERR == +1  or  IERR == -1 ):
 		# part of multi line command.
 		AMPS = 0.0
 		NAMPS = 1
@@ -649,7 +649,7 @@ def QPROP ():
 	#
 	#---- try reading Pele from 10th Unix argument
 	PPARSE (ARGP10,PELE1,PELE2,NPELE,IERR)
-	if (IERR.EQ.+1  or IERR.EQ.-1     ):
+	if ( IERR == +1  or  IERR == -1 ):
 		# part of multi line command.
 		PELE = 0.0
 		NPELE = 1
