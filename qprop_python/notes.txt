@@ -15,19 +15,19 @@ Prop
 http://web.mit.edu/drela/Public/web/qprop/
 
 
-motor.f
-tqcalc.f
-cdfun.f
-tpdes.f
-gvcalc.f
+motor.f         213
+tqcalc.f        315
+cdfun.f         68
+tpdes.f         236
+gvcalc.f        310
 
 
-qmil.f
-qprop.f
-qcget.f
-io.f
-spline.f
-bnsolv.f
+qmil.f          971
+qprop.f         1283
+qcget.f         65
+io.f            432
+spline.f        818
+bnsolv.f        158
 
 
 
@@ -41,24 +41,33 @@ functions return one number back you say functionName = something
 
 Create a tree of which function calls which other function?
 
+FULL COVERAGE
+--------------
+10) NE to 0.0
 13) END statement
 5) STOP statement
-
-3) WRITE statement/ file output
-4) FORMAT statement
-6) subroutine variable handling. return variables
-1) variable declaration
-LOGICAL, CHARACTER, REAL, PARAMETER, INTEGER
-
-2) INCLUDE statement
-6) CONTINUE statement
-7) for loops correction
-8) File input
 9) EQ -1 or EQ +1
-10) NE to 0.0
-11) LE 0.0
-12) Single line if statement
+11) LE 0.0      //not going to cahnge this from default <=
+7) for loops correction // all loops converted -                ^((?!\#).)*DO\s+.*$
+    range adjusted
+
+MEDIUM COVERAGE
+--------------
+12) Single line if statement                                    ^((?!END).)*IF\s*\(.*\)((?!THEN).)*$
+    everything except GO TO can be handled
+3) WRITE statement/ file output
+    when writing to console it is handled
+4) FORMAT statement
+    full details on formatting lines can be printed.
+    manually these lines can be changed.
+
+
+6) subroutine variable handling. return variables
+1) variable declaration LOGICAL, CHARACTER, REAL, PARAMETER, INTEGER
+6) CONTINUE statement
+8) File input
 14) RETURN statement
+2) INCLUDE statement - mentioned in two places - just figure out what it is - no need for a regex for this.
 
 
 29 subroutines

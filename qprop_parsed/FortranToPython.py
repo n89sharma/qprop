@@ -119,21 +119,21 @@ def replaceCommands(tempFilePath, formattedFilePath):
         for line in rf:
             pline = line
             pline = pline.replace('!', '#')
-            pline = re.sub(r'^(?P<tab>\t*)[Cc]+(?P<commentValue>(?![a-zA-Z0-9\(]).*)$',                                           '\g<tab>#\g<commentValue>',                                           pline)
-            pline = re.sub(r'^(?P<tab>\t*)PROGRAM\s+(?P<programName>\w+).*$',                                                   '\g<tab>def \g<programName> ():',                                       pline)
-            pline = re.sub(r'^(?P<tab>\t*)SUBROUTINE\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                '\g<tab>def \g<routineName> (\g<routineParameters>):',                  pline)
-            pline = re.sub(r'^(?P<tab>\t*)DATA\s+(?P<variableName>\w+)\s+/(?P<variableValue>.*)/.*$',                           '\g<tab>\g<variableName> = \g<variableValue>',                          pline)
-            pline = re.sub(r'^(?P<tab>\t*)DO\s+(?P<variableName>\w+)\s*=\s*(?P<fromNum>[\d\w]+)\s*,\s*(?P<toNum>[\d\w]+).*$',   '\g<tab>for \g<variableName> in range( \g<fromNum>, \g<toNum> ):',      pline)
-            pline = re.sub(r'^(?P<tab>\t*)CALL\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                      '\g<tab>\g<routineName> (\g<routineParameters>)',                       pline)
-            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>.*)\)\s*THEN.*$',                                        '\g<tab>if (\g<logicalComparison>):',                                   pline)
-            pline = re.sub(r'^(?P<tab>\t*)ELSEIF\s*\((?P<logicalComparison>.*)\)\s*THEN.*$',                                    '\g<tab>elif (\g<logicalComparison>):',                                 pline)
-            pline = re.sub(r'^(?P<tab>\t*)ELSE IF\s*\((?P<logicalComparison>.*)\)\s*THEN.*$',                                   '\g<tab>elif (\g<logicalComparison>):',                                 pline)
-            pline = re.sub(r'^(?P<tab>\t*)ELSE.*$',                                                                             '\g<tab>else:',                                                         pline)
-            pline = re.sub(r'^(?P<tab>\t*)ENDIF.*$',                                                                            '\g<tab>#ENDIF',                                                        pline)
-            pline = re.sub(r'^(?P<tab>\t*)ENDDO.*$',                                                                            '\g<tab>#ENDDO',                                                        pline)
-            pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>\-*\d+\.\d+)\s*',                            ' isClose(\g<variableName>, \g<variableValue>) ',                       pline)
-            pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>[\-\+\d]+(?!\.))\s*',                        ' \g<variableName> == \g<variableValue> ',                              pline)
-            pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.NE\.\s*(?P<variableValue>[\-\+\d]+\.\d+)\s*',                          ' not isClose(\g<variableName>, \g<variableValue>) ',                   pline)
+            pline = re.sub(r'^(?P<tab>\t*)[Cc]+(?P<commentValue>(?![a-zA-Z0-9\(]).*)$',                                         '\g<tab>#\g<commentValue>',                                                             pline)
+            pline = re.sub(r'^(?P<tab>\t*)PROGRAM\s+(?P<programName>\w+).*$',                                                   '\g<tab>def \g<programName> ():',                                                       pline)
+            pline = re.sub(r'^(?P<tab>\t*)SUBROUTINE\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                '\g<tab>def \g<routineName> (\g<routineParameters>):',                                  pline)
+            pline = re.sub(r'^(?P<tab>\t*)DATA\s+(?P<variableName>\w+)\s+/(?P<variableValue>.*)/.*$',                           '\g<tab>\g<variableName> = \g<variableValue>',                                          pline)
+            pline = re.sub(r'^(?P<tab>\t*)DO\s+(?P<variableName>\w+)\s*=\s*(?P<fromNum>[\d\w]+)\s*,\s*(?P<toNum>[\d\w]+).*$',   '\g<tab>for \g<variableName> in fortranRangeTwoParam( \g<fromNum>, \g<toNum> ):',       pline)
+            pline = re.sub(r'^(?P<tab>\t*)CALL\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                      '\g<tab>\g<routineName> (\g<routineParameters>)',                                       pline)
+            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>.*)\)\s*THEN.*$',                                        '\g<tab>if (\g<logicalComparison>):',                                                   pline)
+            pline = re.sub(r'^(?P<tab>\t*)ELSEIF\s*\((?P<logicalComparison>.*)\)\s*THEN.*$',                                    '\g<tab>elif (\g<logicalComparison>):',                                                 pline)
+            pline = re.sub(r'^(?P<tab>\t*)ELSE IF\s*\((?P<logicalComparison>.*)\)\s*THEN.*$',                                   '\g<tab>elif (\g<logicalComparison>):',                                                 pline)
+            pline = re.sub(r'^(?P<tab>\t*)ELSE.*$',                                                                             '\g<tab>else:',                                                                         pline)
+            pline = re.sub(r'^(?P<tab>\t*)ENDIF.*$',                                                                            '\g<tab>#ENDIF',                                                                        pline)
+            pline = re.sub(r'^(?P<tab>\t*)ENDDO.*$',                                                                            '\g<tab>#ENDDO',                                                                        pline)
+            pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>\-*\d+\.\d+)\s*',                            ' isClose(\g<variableName>, \g<variableValue>) ',                                       pline)
+            pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>[\-\+\d]+(?!\.))\s*',                        ' \g<variableName> == \g<variableValue> ',                                              pline)
+            pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.NE\.\s*(?P<variableValue>[\-\+\d]+\.\d+)\s*',                         ' not isClose(\g<variableName>, \g<variableValue>) ',                                   pline)
 
             pline = re.sub(r'\.FALSE\.',    'False',    pline)
             pline = re.sub(r'\.TRUE\.',     'True',     pline)
@@ -146,13 +146,16 @@ def replaceCommands(tempFilePath, formattedFilePath):
             pline = re.sub(r'\.AND\.',      ' and ',    pline)
 
             pline = re.sub(r'^(?P<tab>\t*)WRITE\s*\(\s*\*\s*,\s*\*\s*\)(?P<printVariables>.*)$', '\g<tab>print \g<printVariables>', pline)
-            pline = re.sub(r'^(?P<tab>\t*)DO\s+\d+\s+(?P<variableName>\w+)\s*=\s*(?P<firstParameter>[\-\+\d\w]+)\s*,\s*(?P<secondParameter>[\-\+\d\w]+).*$', '\g<tab>for \g<variableName> in range( \g<firstParameter>, \g<secondParameter> ):', pline)
-            pline = re.sub(r'^(?P<tab>\t*)DO\s+\d+\s+(?P<variableName>\w+)\s*=\s*(?P<firstParameter>[\-\+\d\w]+)\s*,\s*(?P<secondParameter>[\-\+\d\w]+)\s*,\s*(?P<thirdParameter>[-+\d]+).*$', '\g<tab>for \g<variableName> in range( \g<firstParameter>, \g<secondParameter>, \g<thirdParameter> ):', pline)
+            pline = re.sub(r'^(?P<tab>\t*)DO\s+\d+\s+(?P<variableName>\w+)\s*=\s*(?P<firstParameter>[\-\+\d\w]+)\s*,\s*(?P<secondParameter>[\-\+\d\w]+).*$', '\g<tab>for \g<variableName> in fortranRangeTwoParam( \g<firstParameter>, \g<secondParameter> ):', pline)
+            pline = re.sub(r'^(?P<tab>\t*)DO\s+\d+\s+(?P<variableName>\w+)\s*=\s*(?P<firstParameter>[\-\+\d\w]+)\s*,\s*(?P<secondParameter>[\-\+\d\w]+)\s*,\s*(?P<thirdParameter>[-+\d]+).*$', '\g<tab>for \g<variableName> in fortranRangeThreeParam( \g<firstParameter>, \g<secondParameter>, \g<thirdParameter> ):', pline)
             pline = re.sub(r'^(?P<tab>\t*)(?P<lineLabel>\d+)\s+(?P<formatLine>CONTINUE.*)$', '\g<tab>#\g<lineLabel> CONTINUE', pline)
 
             pline = re.sub(r'^(?P<tab>\t*)STOP',        '\g<tab>raise SystemExit',  pline)
             pline = re.sub(r'^(?P<tab>\t*)RETURN',      '\g<tab>return',            pline)
             pline = re.sub(r'^(?P<tab>\t*)END',         '\g<tab>#END',              pline)
+
+            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>((?!\)).)*)\)\s*STOP\s*(?P<exitStatement>\'.*\')[^\S\n]*$',  '\g<tab>if (\g<logicalComparison>): raise SystemExit(\g<exitStatement>)',   pline)
+            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>((?!\)).)*)\)\s*(?P<assignmentStatement>((?!STOP).*=.*))$',  '\g<tab>if (\g<logicalComparison>): \g<assignmentStatement>',   pline)
             # pline = re.sub(r'^\t*REAL', '#REAL', pline)
             # pline = re.sub(r'WRITE\(\*,\*\)', 'print', pline)
             # pline = re.sub(r'^WRITE\(\*,\*\)$', 'print \'\'', pline)
@@ -197,6 +200,33 @@ def extractFormattingLines(filePaths, outputResultFile):
                 for usage in lineLabels[key]['usages']:
                     fw.write('\t' + str(usage) + '\n')
 
+def getVariableListForFile(sourceFilePath):
+    if 'qprop.f' in sourceFilePath:
+        return ['WORK',	'RB',	'CL0B',	'CD0B',	'REREFB',	'R',	'CL0',
+        'CD0',	'REREF',	'VA',	'STALL',	'TP_C',	'QP_C',	'PARMOT',
+        'PMLAB',	'CB',	'DCLDAB',	'CD2UB',	'REEXPB',	'C',
+        'DCLDA',	'CD2U',	'REEXP',	'VT',	'TP_B',	'QP_B',	'BB','CLMINB',
+        'CD2LB',	'MCRITB',	'B',	'CLMIN',	'CD2L',	'MCRIT',	'CL',
+        'CLMAXB',	'CLCD0B',	'DR',	'CLMAX',	'CLCD0',	'CD', 'RVAL', 'IVAL']
+
+def fortranRangeTwoParam(fromNum, toNum):
+    return range(fromNum-1, toNum)
+
+def replaceVariableParenthesis(mainSourceFile, sourceFile, tempFile):
+    variableNames = getVariableListForFile(mainSourceFile)
+    varRegExStrings = [ (var, var + r'\((?P<index>((?!\)).)*)\)') for var in variableNames]
+    variableDecleration
+    with open(sourceFile, 'r') as fr:
+        sourceData = fr.read()
+
+    formattedData = sourceData
+    for var, varRegExString in varRegExStrings:
+        formattedData = re.sub(varRegExString, var + '[\g<index> - 1]', formattedData)
+
+    with open(tempFile, 'w') as fw:
+        fw.write(formattedData)
+
+
 if __name__ == '__main__':
     sourceFilePath      = 'qprop_source/src/motor.f'
     sourceFilePath      = 'qprop_source/src/spline.f'
@@ -207,11 +237,13 @@ if __name__ == '__main__':
     sourceFilePath      = 'qprop_source/src/qprop.f'
     tempFilePath        = 'qprop_parsed/parsedFile1.f'
     tempFilePath2       = 'qprop_parsed/parsedFile2.py'
+    tempFilePath3       = 'qprop_parsed/parsedFile3.py'
     formattedFilePath   = 'qprop_parsed/finalParsedFile.py'
 
 
 
     collapseMultiLines(sourceFilePath, tempFilePath)
-    # extractFormattingLines([tempFilePath], 'qprop_parsed/formattingLines.txt')
+    #extractFormattingLines([tempFilePath], 'qprop_parsed/formattingLines.txt')
     addTabs(tempFilePath, tempFilePath2)
-    replaceCommands(tempFilePath2, formattedFilePath)
+    replaceVariableParenthesis(sourceFilePath, tempFilePath2, tempFilePath3)
+    replaceCommands(tempFilePath3, formattedFilePath)
