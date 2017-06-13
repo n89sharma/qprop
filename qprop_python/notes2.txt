@@ -1,0 +1,10 @@
+variable declarations
+write statements
+format statements
+read statements
+for and index correction would clash
+  for index = 0 to N
+    var[index - 1] ---- first one is negative one
+  if a variable is in a for loop then do not add the negative one
+go to statements
+open statements

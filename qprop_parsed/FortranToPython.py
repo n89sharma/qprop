@@ -226,6 +226,58 @@ def replaceVariableParenthesis(mainSourceFile, sourceFile, tempFile):
     with open(tempFile, 'w') as fw:
         fw.write(formattedData)
 
+def initialValueForVarType(real, logical, character, integer):
+    if(real):
+        return '0.0'
+    elif(logical):
+        return 'False'
+    elif(character):
+        return '\'\''
+    else:
+        return '0'
+
+def replaceVariableDeclerations(sourceFile, tempFile):
+
+    realRegEx       = re.compile(r'^\s*REAL(?P<variables>.*)$')
+    logicalRegEx    = re.compile(r'^\s*LOGICAL(?P<variables>.*)$')
+    characterRegEx  = re.compile(r'^\s*CHARACTER\*\d+(?P<variables>.*)$')
+    integerRegEx    = re.compile(r'^\s*INTEGER(?P<variables>.*)$')
+    varArrayRegEx   = re.compile(r'(?P<varName>.+)\s*\((?P<arrayLength>((?!\)).)+)\)')
+    varArrayList = []
+    singleVarList = []
+    with open(sourceFile, 'r') as fr:
+        for line in fr:
+            real        = realRegEx.match(line)
+            logical     = logicalRegEx.match(line)
+            character   = characterRegEx.match(line)
+            integer     = integerRegEx.match(line)
+
+            if real:
+                data = real.group('variables')
+            elif logical:
+                data = logical.group('variables')
+            elif character:
+                data = character.group('variables')
+            elif integer:
+                data = integer.group('variables')
+            else:
+                data = None
+
+            if data != None:
+                initialValue = initialValueForVarType(real, logical, character, integer)
+                variables = re.split(',', data)
+                for variable in variables:
+                    varArray    = varArrayRegEx.match(variable)
+                    if varArray:
+                        varArrayList.append(varArray.group('varName') + '=[' + initialValue +  ']*' + varArray.group('arrayLength') )
+                    else:
+                        singleVarList.append(variable + '=' + initialValue)
+
+    print singleVarList
+
+
+
+
 
 if __name__ == '__main__':
     sourceFilePath      = 'qprop_source/src/motor.f'
@@ -244,6 +296,8 @@ if __name__ == '__main__':
 
     collapseMultiLines(sourceFilePath, tempFilePath)
     #extractFormattingLines([tempFilePath], 'qprop_parsed/formattingLines.txt')
-    addTabs(tempFilePath, tempFilePath2)
-    replaceVariableParenthesis(sourceFilePath, tempFilePath2, tempFilePath3)
-    replaceCommands(tempFilePath3, formattedFilePath)
+
+    replaceVariableDeclerations(tempFilePath, '')
+    #addTabs(tempFilePath, tempFilePath2)
+    #replaceVariableParenthesis(sourceFilePath, tempFilePath2, tempFilePath3)
+    #replaceCommands(tempFilePath3, formattedFilePath)

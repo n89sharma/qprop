@@ -31,25 +31,7 @@ bnsolv.f        158
 
 
 
-what is REAL C(N)?
-what is IMPLICIT REAL ? implicit type. any variable name with the given pattern
-    would be assigned the given type
-LOGICAL is a boolean?
-what is SIGN? sign(a, b) return a with sign of b
-how do subroutines return results? you send variables and they change it
-functions return one number back you say functionName = something
 
-Create a tree of which function calls which other function?
-
-FULL COVERAGE
---------------
-10) NE to 0.0
-13) END statement
-5) STOP statement
-9) EQ -1 or EQ +1
-11) LE 0.0      //not going to cahnge this from default <=
-7) for loops correction // all loops converted -                ^((?!\#).)*DO\s+.*$
-    range adjusted
 
 MEDIUM COVERAGE
 --------------
