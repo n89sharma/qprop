@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  qprop.f
-C 
-C    Copyright (C) 2005 Mark Drela 
-C 
+C
+C    Copyright (C) 2005 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -31,7 +31,7 @@ C % qprop propfile motorfile Vel1,Vel2,dVel Rpm Volt dBeta  (1-param multi-point
 C
 C % qprop propfile motorfile Vel1,Vel2/NVel Rpm Volt dBeta  (1-param multi-point)
 C
-C % qprop propfile motorfile Vel1,Vel2/NVel Rpm Volt1,Volt2,dVolt dBeta  
+C % qprop propfile motorfile Vel1,Vel2/NVel Rpm Volt1,Volt2,dVolt dBeta
 C                                                           (2-param multi-point)
 C
 C % qprop propfile motorfile runfile               (multi-point)
@@ -129,7 +129,7 @@ C
        WRITE(*,*) 'Run with default inputs?  Y'
        READ(*,1000) ANS
        IF(INDEX('Nn',ANS) .NE. 0) STOP
-       WRITE(*,*) 
+       WRITE(*,*)
       ENDIF
 C
 C---- default fluid properties from QDEF.INC
@@ -171,24 +171,24 @@ C
 C---- radii
       RFAC = 0.0254
       RADD = 0.
-      RB(1) = 0.75  
-      RB(2) = 1.00  
-      RB(3) = 1.50  
-      RB(4) = 2.00  
-      RB(5) = 2.50  
-      RB(6) = 2.875 
-      RB(7) = 3.00  
+      RB(1) = 0.75
+      RB(2) = 1.00
+      RB(3) = 1.50
+      RB(4) = 2.00
+      RB(5) = 2.50
+      RB(6) = 2.875
+      RB(7) = 3.00
 C
 C---- chords
       CFAC = 0.0254
       CADD = 0.
-      CB(1) = 0.66 
-      CB(2) = 0.69 
-      CB(3) = 0.63 
-      CB(4) = 0.55 
-      CB(5) = 0.44 
-      CB(6) = 0.30 
-      CB(7) = 0.19 
+      CB(1) = 0.66
+      CB(2) = 0.69
+      CB(3) = 0.63
+      CB(4) = 0.55
+      CB(5) = 0.44
+      CB(6) = 0.30
+      CB(7) = 0.19
 C
 C---- blade angles
       BFAC = 1.0
@@ -409,7 +409,7 @@ C
       ENDIF
 C
       DO IR = 1, NR-1
-        IF(CB(IR) .LE. 0.0) 
+        IF(CB(IR) .LE. 0.0)
      &     STOP 'Chords must be positive'
         IF(RB(IR) .LT. 0.0)
      &     STOP 'Radii must be nonnegative'
@@ -675,12 +675,12 @@ C
 C
  82   CONTINUE
 C
-      IF(NRPM .EQ.0 .AND. 
-     &   NVOLT.EQ.0 .AND. 
+      IF(NRPM .EQ.0 .AND.
+     &   NVOLT.EQ.0 .AND.
      &   NTHRU.EQ.0 .AND.
      &   NAMPS.EQ.0 .AND.
      &   NPELE.EQ.0       ) THEN
-       WRITE(*,*) 
+       WRITE(*,*)
      &  'Must specify either Rpm or Volts or Thrust or Amps or Pele'
        STOP
       ENDIF
@@ -744,7 +744,7 @@ C
       ENDDO
 C
       CALL SPLINE(CD2UB,WORK,RB,NR)
-      DO I = 1, N 
+      DO I = 1, N
         CD2U(I) = SEVAL(R(I),CD2UB,WORK,RB,NR)
       ENDDO
 C
@@ -997,7 +997,7 @@ C------------- set voltage = f(w,Q) by inverting MOTORQ's Q(w,voltage) function
                AMPS = AM
 C
               ELSEIF(LVOLTSET) THEN
-               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR, 
+               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR,
      &                     QM,QM_OMG,QM_VOLT,
      &                     AM,AM_OMG,AM_VOLT )
 C
@@ -1012,7 +1012,7 @@ C
                AMPS = AM
 C
               ELSEIF(LTHRUSET) THEN
-               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR, 
+               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR,
      &                     QM,QM_OMG,QM_VOLT,
      &                     AM,AM_OMG,AM_VOLT )
 C
@@ -1038,7 +1038,7 @@ C
                AMPS = AM
 C
               ELSEIF(LTORQSET) THEN
-               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR, 
+               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR,
      &                     QM,QM_OMG,QM_VOLT,
      &                     AM,AM_OMG,AM_VOLT )
 C
@@ -1064,8 +1064,8 @@ C
                AMPS = AM
 C
               ELSEIF(LAMPSSET) THEN
-               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR, 
-     &                     QM,QM_OMG,QM_VOLT, 
+               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR,
+     &                     QM,QM_OMG,QM_VOLT,
      &                     AM,AM_OMG,AM_VOLT )
 C
 C------------- Residual  =  prop torque - motor torque  at current omega
@@ -1088,8 +1088,8 @@ C
                DVOLT = -(A11 *RES2 - RES1*A21 ) / DET
 C
               ELSEIF(LPELESET) THEN
-               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR, 
-     &                     QM,QM_OMG,QM_VOLT, 
+               CALL MOTORQ(OMG,VOLT, IMOTYPE, PARMOT,NMPAR,
+     &                     QM,QM_OMG,QM_VOLT,
      &                     AM,AM_OMG,AM_VOLT )
 C
 C------------- Residual  =  prop torque - motor torque  at current omega
@@ -1122,7 +1122,7 @@ C
               IF(RLX*DVOLT .GT.  2.0*VOLT) RLX =  2.0*VOLT/DVOLT
               IF(RLX*DVOLT .LT. -0.5*VOLT) RLX = -0.5*VOLT/DVOLT
 
-c           write(*,'(1x,i3,2(f12.3,e12.4),f7.3)') 
+c           write(*,'(1x,i3,2(f12.3,e12.4),f7.3)')
 c    &            iter, omg, domg, volt, dvolt, rlx
 
 C------------ convergence check
@@ -1195,8 +1195,8 @@ C
             DV = SQRT(VEL**2 + TP * 2.0/(RHO*PI*RAD**2)) - VEL
 C
             WRITE(LU,2100) CHARF,
-     &        VEL,   RPM,  DBET,   TP,     QP, POWER, 
-     &       VOLT,AMPS,  EFFM,  EFFP, ADV, CT, CP, DV, 
+     &        VEL,   RPM,  DBET,   TP,     QP, POWER,
+     &       VOLT,AMPS,  EFFM,  EFFP, ADV, CT, CP, DV,
      &       EFF, PINPUT, PPROP, CLAVG, CDAVG
  2100       FORMAT(A,
      &       F8.3,  G12.4,  F7.3, G12.4, G12.4, G12.4,
@@ -1246,7 +1246,7 @@ C
 C------- swirl flow angle in non-rotating frame
          ASWIRL = ATAN2( VT(I) , WA ) * 180.0/PI
 C
-         WRITE(LU,3100) 
+         WRITE(LU,3100)
      &               RU,   CU,   BU, CL(I), CD(I),
      &              IRE,  AMA, EFFI, EFFP, WA, ASWIRL, ADW
  3100    FORMAT(1X,F8.4, F8.4, F8.3, F9.4,  F9.5,
@@ -1279,4 +1279,3 @@ C
       STOP
 C
       END ! QPROP
-         

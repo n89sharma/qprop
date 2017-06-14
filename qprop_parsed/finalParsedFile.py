@@ -41,59 +41,59 @@ def QPROP ():
 	IMPLICIT REAL (A-H,M,O-Z)
 	#
 	#---- input radial quantities (from propfile)
-	PARAMETER (IRDIM=81)
-	REAL WORK[IRDIM - 1]
-	REAL RB[IRDIM - 1], CB[IRDIM - 1], BB[IRDIM - 1]
-	REAL CL0B[IRDIM - 1], DCLDAB[IRDIM - 1], CLMINB[IRDIM - 1], CLMAXB[IRDIM - 1]
-	REAL CD0B[IRDIM - 1], CD2UB[IRDIM - 1], CD2LB[IRDIM - 1], CLCD0B[IRDIM - 1]
-	REAL REREFB[IRDIM - 1], REEXPB[IRDIM - 1], MCRITB[IRDIM - 1]
+	IRDIM = 81
+	WORK = [0.0]*IRDIM
+	RB, CB, BB = [0.0]*IRDIM ,[0.0]*IRDIM ,[0.0]*IRDIM
+	CL0B, DCLDAB, CLMINB, CLMAXB = [0.0]*IRDIM ,[0.0]*IRDIM ,[0.0]*IRDIM ,[0.0]*IRDIM
+	CD0B, CD2UB, CD2LB, CLCD0B = [0.0]*IRDIM ,[0.0]*IRDIM ,[0.0]*IRDIM ,[0.0]*IRDIM
+	REREFB, REEXPB, MCRITB = [0.0]*IRDIM ,[0.0]*IRDIM ,[0.0]*IRDIM
 	#
 	#---- radial quantities interpolated to computational stations
-	PARAMETER (IDIM=25)
-	REAL R[IDIM - 1], C[IDIM - 1], B[IDIM - 1], DR[IDIM - 1]
-	REAL CL0[IDIM - 1], DCLDA[IDIM - 1], CLMIN[IDIM - 1], CLMAX[IDIM - 1]
-	REAL CD0[IDIM - 1], CD2U[IDIM - 1], CD2L[IDIM - 1], CLCD0[IDIM - 1]
-	REAL REREF[IDIM - 1], REEXP[IDIM - 1], MCRIT[IDIM - 1]
-	REAL VA[IDIM - 1], VT[IDIM - 1], CL[IDIM - 1], CD[IDIM - 1]
-	LOGICAL STALL[IDIM - 1]
+	IDIM = 25
+	R, C, B, DR = [0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM
+	CL0, DCLDA, CLMIN, CLMAX = [0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM
+	CD0, CD2U, CD2L, CLCD0 = [0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM
+	REREF, REEXP, MCRIT = [0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM
+	VA, VT, CL, CD = [0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM
+	STALL = [False]*IDIM
 	#
-	REAL TP_C[IDIM - 1], TP_B[IDIM - 1],QP_C[IDIM - 1], QP_B[IDIM - 1]
+	TP_C, TP_B,QP_C, QP_B = [0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM ,[0.0]*IDIM
 	# part of multi line command.
 	#
 	#---- motor parameters
-	PARAMETER (NMPDIM=10)
-	REAL PARMOT[NMPDIM - 1]
-	CHARACTER*32 PMLAB[NMPDIM - 1]
+	NMPDIM = 10
+	PARMOT = [0.0]*NMPDIM
+	PMLAB = ['']*NMPDIM
 	#
 	#---- various character variables
-	CHARACTER*1 CHARF, ANS
-	CHARACTER*80 PNAME, MNAME
-	CHARACTER*80 ARGP1, ARGP2, ARGP3, ARGP4, ARGP5,ARGP6, ARGP7, ARGP8, ARGP9, ARGP10
+	CHARF, ANS = '',''
+	PNAME, MNAME = '',''
+	ARGP1, ARGP2, ARGP3, ARGP4, ARGP5,ARGP6, ARGP7, ARGP8, ARGP9, ARGP10 = '','','','','','','','','',''
 	# part of multi line command.
-	CHARACTER*80 FILNAM
-	CHARACTER*128 LINE
+	FILNAM = ''
+	LINE = ''
 	#
-	LOGICAL LRDUMP
-	LOGICAL LRPMSET,LVOLTSET,LTHRUSET,LTORQSET,LAMPSSET,LPELESET
+	LRDUMP = False
+	LRPMSET,LVOLTSET,LTHRUSET,LTORQSET,LAMPSSET,LPELESET = False,False,False,False,False,False
 	# part of multi line command.
 	# part of multi line command.
 	# part of multi line command.
 	# part of multi line command.
 	# part of multi line command.
-	LOGICAL ERROR
+	ERROR = False
 	#
 	INCLUDE 'QDEF.INC'
 	#
 	#---- input receiving arrays
-	REAL RVAL[15 - 1]
-	INTEGER IVAL[15 - 1]
+	RVAL = [0.0]*15
+	IVAL = [0]*15
 	#
-	PI =  3.14159265 
+	PI =  3.14159265
 	#      DATA EPS / 1.0E-6 /
-	EPS =  1.0E-8 
+	EPS =  1.0E-8
 	#
-	VERSION =  1.22 
-	
+	VERSION =  1.22
+
 	#---- default Mcrit
 	MCRIT0 = 0.70
 	#
@@ -125,11 +125,11 @@ def QPROP ():
 		# part of multi line command.
 		# part of multi line command.
 		# part of multi line command.
-		print 
+		print
 		print  'Run with default inputs?  Y'
 		READ(*,1000) ANS
 		if (INDEX('Nn',ANS): != 0) STOP
-		print 
+		print
 	#ENDIF
 	#
 	#---- default fluid properties from QDEF.INC
@@ -384,7 +384,7 @@ def QPROP ():
 	GO TO 19
 	#
 	#18 CONTINUE
-	print 
+	print
 	print  'Prop file not found:  ', FILNAM(1:48)
 	print  'Default prop used  :  ', PNAME
 	#
@@ -392,7 +392,7 @@ def QPROP ():
 	#19 CONTINUE
 	#
 	if (NR<=1):
-		print 
+		print
 		print  '*** Must define at least two radial stations'
 		raise SystemExit
 	#ENDIF
@@ -481,7 +481,7 @@ def QPROP ():
 	GO TO 29
 	#
 	#28 CONTINUE
-	print 
+	print
 	print  'Motor file not found:  ', FILNAM(1:48)
 	print  'Default motor used  :  ', MNAME
 	#
@@ -669,7 +669,7 @@ def QPROP ():
 	#
 	#
 	#80 CONTINUE
-	print 
+	print
 	print  'Run parameter file not found: ', FILNAM(1:48)
 	print  'Default velocities, voltages, pitch used'
 	#
@@ -694,7 +694,7 @@ def QPROP ():
 	#
 	#    write(*,*)
 	#   &  lrpmset, lvoltset, lthruset, ltorqset, lampsset, lpeleset
-	
+
 	#==========================================================
 	#
 	#---- set up finely-spaced radial arrays
@@ -791,7 +791,7 @@ def QPROP ():
 	#ENDDO
 	#
 	if (ERROR):
-		print 
+		print
 		WRITE(*,1100)' i   radius   chord     beta    Re_ref'
 		# part of multi line command.
 		for I in fortranRangeTwoParam( 1, N ):
@@ -799,16 +799,16 @@ def QPROP ():
 			WRITE(*,1070) I, R[I - 1], C[I - 1], B[I - 1]*180.0/PI, IRE
 			1070     FORMAT(1X,I3, F9.4, F9.4, F9.3, I9)
 		#ENDDO
-		print 
+		print
 		raise SystemExit
 	#ENDIF
-	
+
 	#
 	#----------------------------------------------------
 	#---- perform calculations and dump output
 	#
 	LU = 6
-	print 
+	print
 	#
 	1105 FORMAT('# QPROP Version', F5.2)
 	1100 FORMAT('# ', A,A,A,A)
@@ -907,7 +907,7 @@ def QPROP ():
 	# part of multi line command.
 	# part of multi line command.
 	# part of multi line command.
-	
+
 	#
 	for IDBET in fortranRangeTwoParam( 1, NDBET ):
 		DBET = DBET1 + DDBET*FLOAT(IDBET-1)
@@ -1121,10 +1121,10 @@ def QPROP ():
 					#
 					if (RLX*DVOLT >  2.0*VOLT): RLX =  2.0*VOLT/DVOLT
 					if (RLX*DVOLT < -0.5*VOLT): RLX = -0.5*VOLT/DVOLT
-					
+
 					#           write(*,'(1x,i3,2(f12.3,e12.4),f7.3)')
 					#    &            iter, omg, domg, volt, dvolt, rlx
-					
+
 					#------------ convergence check
 					IF(ABS(DOMG) < EPS*ABS(OMG)) GO TO 110
 					#
@@ -1135,7 +1135,7 @@ def QPROP ():
 					#            WRITE(*,*) 'QPROP: Convergence failed. Res =', RES
 					#
 					#110 CONTINUE
-					
+
 					#        Q = 1.0 / (Kv*pi/30.0) * (I-Io)
 					#        I = Io + Q*(Kv*pi/30.0)
 					#        P = (V-I*R) * (I-Io)
@@ -1279,4 +1279,3 @@ def QPROP ():
 		raise SystemExit
 		#
 	#END # QPROP
-	

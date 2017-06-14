@@ -215,7 +215,7 @@ def fortranRangeTwoParam(fromNum, toNum):
 def replaceVariableParenthesis(mainSourceFile, sourceFile, tempFile):
     variableNames = getVariableListForFile(mainSourceFile)
     varRegExStrings = [ (var, var + r'\((?P<index>((?!\)).)*)\)') for var in variableNames]
-    variableDecleration
+
     with open(sourceFile, 'r') as fr:
         sourceData = fr.read()
 
@@ -238,19 +238,22 @@ def initialValueForVarType(real, logical, character, integer):
 
 def replaceVariableDeclerations(sourceFile, tempFile):
 
+    parameterRegEx  = re.compile(r'^\s*PARAMETER\s*\((?P<parameterName>.+)=(?P<parameterValue>.+)\)$')
     realRegEx       = re.compile(r'^\s*REAL(?P<variables>.*)$')
     logicalRegEx    = re.compile(r'^\s*LOGICAL(?P<variables>.*)$')
     characterRegEx  = re.compile(r'^\s*CHARACTER\*\d+(?P<variables>.*)$')
     integerRegEx    = re.compile(r'^\s*INTEGER(?P<variables>.*)$')
     varArrayRegEx   = re.compile(r'(?P<varName>.+)\s*\((?P<arrayLength>((?!\)).)+)\)')
-    varArrayList = []
-    singleVarList = []
+
+    formattedLines = []
     with open(sourceFile, 'r') as fr:
         for line in fr:
+            formattedLine = line
             real        = realRegEx.match(line)
             logical     = logicalRegEx.match(line)
             character   = characterRegEx.match(line)
             integer     = integerRegEx.match(line)
+            parameter   = parameterRegEx.match(line)
 
             if real:
                 data = real.group('variables')
@@ -265,16 +268,55 @@ def replaceVariableDeclerations(sourceFile, tempFile):
 
             if data != None:
                 initialValue = initialValueForVarType(real, logical, character, integer)
-                variables = re.split(',', data)
-                for variable in variables:
-                    varArray    = varArrayRegEx.match(variable)
-                    if varArray:
-                        varArrayList.append(varArray.group('varName') + '=[' + initialValue +  ']*' + varArray.group('arrayLength') )
+                isMultiVariableLine = len(re.findall(',', data)) > 0
+
+                if isMultiVariableLine:
+                    varList = []
+                    varArrayList = []
+                    varArrayLengthList = []
+
+                    variables = re.split(',', data)
+                    for variable in variables:
+                        varArray    = varArrayRegEx.match(variable)
+                        if varArray:
+                            varArrayList.append(varArray.group('varName'))
+                            varArrayLengthList.append(varArray.group('arrayLength'))
+                        else:
+                            varList.append(variable)
+
+                    if len(varArrayList) > 0:
+                        formattedLine = ''
+                        for varName in varArrayList[:-1]:
+                            formattedLine += varName + ','
+                        formattedLine += varArrayList[-1] + ' = '
+                        for arrayLength in varArrayLengthList[:-1]:
+                            formattedLine += '[' + str(initialValue) + ']*' + arrayLength + ' ,'
+                        formattedLine += '[' + str(initialValue) + ']*' + varArrayLengthList[-1] + '\n'
                     else:
-                        singleVarList.append(variable + '=' + initialValue)
+                        formattedLine = ''
+                        for varName in varList[:-1]:
+                            formattedLine += varName + ','
+                        formattedLine += varList[-1] + ' = '
+                        for varName in varList[:-1]:
+                            formattedLine += str(initialValue) + ','
+                        formattedLine += str(initialValue) + '\n'
+                else:
+                    varArray    = varArrayRegEx.match(data)
+                    if varArray:
+                        formattedLine = varArray.group('varName') + ' = ' + '[' + str(initialValue) + ']*' + varArray.group('arrayLength') + '\n'
+                    else:
+                        formattedLine = data + ' = ' + initialValue + '\n'
 
-    print singleVarList
+            if parameter:
+                varName         = parameter.group('parameterName')
+                varValue        = parameter.group('parameterValue')
+                formattedLine   = varName + ' = ' + varValue + '\n'
 
+            formattedLines.append(formattedLine)
+
+    with open(tempFile, 'w') as fw:
+        for line in formattedLines:
+            fw.write(line)
 
 
 
@@ -286,18 +328,19 @@ if __name__ == '__main__':
 
 
     sourceFilePath      = 'qprop_source/src/bnsolv.f'
+
     sourceFilePath      = 'qprop_source/src/qprop.f'
     tempFilePath        = 'qprop_parsed/parsedFile1.f'
     tempFilePath2       = 'qprop_parsed/parsedFile2.py'
     tempFilePath3       = 'qprop_parsed/parsedFile3.py'
+    tempFilePath4       = 'qprop_parsed/parsedFile4.py'
     formattedFilePath   = 'qprop_parsed/finalParsedFile.py'
 
 
 
     collapseMultiLines(sourceFilePath, tempFilePath)
     #extractFormattingLines([tempFilePath], 'qprop_parsed/formattingLines.txt')
-
-    replaceVariableDeclerations(tempFilePath, '')
-    #addTabs(tempFilePath, tempFilePath2)
-    #replaceVariableParenthesis(sourceFilePath, tempFilePath2, tempFilePath3)
-    #replaceCommands(tempFilePath3, formattedFilePath)
+    replaceVariableDeclerations(tempFilePath, tempFilePath2)
+    addTabs(tempFilePath2, tempFilePath3)
+    replaceVariableParenthesis(sourceFilePath, tempFilePath3, tempFilePath4)
+    replaceCommands(tempFilePath4, formattedFilePath)
