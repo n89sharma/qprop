@@ -5,7 +5,9 @@ def beginningOfLoopOrConditional(lineContent):
     return  re.match(r'\bPROGRAM\b', lineContent) or\
             re.match(r'\bSUBROUTINE\b', lineContent) or\
             re.match(r'\bDO\b', lineContent) or\
-            re.match(r'\bIF\b.*\bTHEN\b', lineContent)
+            re.match(r'\bIF\b.*\bTHEN\b', lineContent) or\
+            re.match(r'\bFUNCTION\b', lineContent)
+
 
 def intermediateConditionalStatements(lineContent):
     return  re.match(r'\bELSEIF\b', lineContent) or\
@@ -93,6 +95,8 @@ def addTabs(tempFilePath, formattedFilePath):
                     lineLabelContinue in doLoopLineLabels)):
                 mainList[currLevel - 1].append((lineNumber, lineContent))
                 currLevel -= 1
+                # if currLevel < 0:
+                    # currLevel = 0
 
             else:
                 mainList[currLevel].append((lineNumber, lineContent))
@@ -116,6 +120,7 @@ def replaceCommands(tempFilePath, formattedFilePath):
             pline = re.sub(r'^(?P<tab>\t*)[Cc]+(?P<commentValue>(?![a-zA-Z0-9\(]).*)$',                                         '\g<tab>#\g<commentValue>',                                                             pline)
             pline = re.sub(r'^(?P<tab>\t*)PROGRAM\s+(?P<programName>\w+).*$',                                                   '\g<tab>def \g<programName> ():',                                                       pline)
             pline = re.sub(r'^(?P<tab>\t*)SUBROUTINE\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                '\g<tab>def \g<routineName> (\g<routineParameters>):',                                  pline)
+            pline = re.sub(r'^(?P<tab>\t*)FUNCTION\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                  '\g<tab>def \g<routineName> (\g<routineParameters>):',                                  pline)
             pline = re.sub(r'^(?P<tab>\t*)DATA\s+(?P<variableName>\w+)\s+/(?P<variableValue>.*)/.*$',                           '\g<tab>\g<variableName> = \g<variableValue>',                                          pline)
             pline = re.sub(r'^(?P<tab>\t*)DO\s+(?P<variableName>\w+)\s*=\s*(?P<fromNum>[\d\w]+)\s*,\s*(?P<toNum>[\d\w]+).*$',   '\g<tab>for \g<variableName> in fortranRangeTwoParam( \g<fromNum>, \g<toNum> ):',       pline)
             pline = re.sub(r'^(?P<tab>\t*)CALL\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                      '\g<tab>\g<routineName> (\g<routineParameters>)',                                       pline)
@@ -211,8 +216,8 @@ def replaceVariableParenthesis(variableNames, sourceFile, tempFile):
     with open(tempFile, 'w') as fw:
         fw.write(formattedData)
 
-def initialValueForVarType(real, logical, character, integer):
-    if(real):
+def initialValueForVarType(real, dimension, logical, character, integer):
+    if(real or dimension):
         return '0.0'
     elif(logical):
         return 'False'
@@ -225,6 +230,7 @@ def replaceVariableDeclerations(sourceFile, tempFile):
 
     parameterRegEx  = re.compile(r'^\s*PARAMETER\s*\((?P<parameterName>.+)=(?P<parameterValue>.+)\)$')
     realRegEx       = re.compile(r'^\s*REAL(?P<variables>.*)$')
+    dimensionRegEx  = re.compile(r'^\s*DIMENSION(?P<variables>.*)$')
     logicalRegEx    = re.compile(r'^\s*LOGICAL(?P<variables>.*)$')
     characterRegEx  = re.compile(r'^\s*CHARACTER\*\d+(?P<variables>.*)$')
     integerRegEx    = re.compile(r'^\s*INTEGER(?P<variables>.*)$')
@@ -236,6 +242,7 @@ def replaceVariableDeclerations(sourceFile, tempFile):
         for line in fr:
             formattedLine = line
             real        = realRegEx.match(line)
+            dimension   = dimensionRegEx.match(line)
             logical     = logicalRegEx.match(line)
             character   = characterRegEx.match(line)
             integer     = integerRegEx.match(line)
@@ -243,6 +250,8 @@ def replaceVariableDeclerations(sourceFile, tempFile):
 
             if real:
                 data = real.group('variables')
+            elif dimension:
+                data = dimension.group('variables')
             elif logical:
                 data = logical.group('variables')
             elif character:
@@ -253,7 +262,7 @@ def replaceVariableDeclerations(sourceFile, tempFile):
                 data = None
 
             if data != None:
-                initialValue = initialValueForVarType(real, logical, character, integer)
+                initialValue = initialValueForVarType(real, dimension, logical, character, integer)
                 isMultiVariableLine = len(re.findall(',', data)) > 0
 
                 if isMultiVariableLine:
@@ -331,9 +340,9 @@ if __name__ == '__main__':
     sourceFilePath      = 'qprop_source/src/qprop.f'
     sourceFilePath      = 'qprop_source/src/gvcalc.f'
     sourceFilePath      = 'qprop_source/src/tpdes.f'
-    sourceFilePath      = 'qprop_source/src/tqcalc.f'
-    sourceFilePath      = 'qprop_source/src/spline.f'
     sourceFilePath      = 'qprop_source/src/qmil.f'
+    sourceFilePath      = 'qprop_source/src/spline.f'
+    sourceFilePath      = 'qprop_source/src/tqcalc.f'
 
     tempFilePath        = 'qprop_parsed/parsedFile1.f'
     tempFilePath2       = 'qprop_parsed/parsedFile2.py'
