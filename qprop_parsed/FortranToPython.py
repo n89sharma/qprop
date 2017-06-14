@@ -17,7 +17,7 @@ def terminationOfLoopOrConditional(lineContent):
             re.match(r'\bENDIF\b', lineContent)
 
 def continueLine(lineContent):
-    reg = re.compile(r'^.*(?P<lineLabel>\d+)\s+CONTINUE.*$')
+    reg = re.compile(r'^\s*(?P<lineLabel>\d+)\s+CONTINUE.*$')
     match = reg.match(lineContent)
     if match:
         return match.group('lineLabel')
@@ -25,7 +25,7 @@ def continueLine(lineContent):
         return False
 
 def doLoopWithLineLabel(lineContent):
-    reg = re.compile(r'^.*DO\s+(?P<lineLabel>\d+).*$')
+    reg = re.compile(r'^\s*DO\s+(?P<lineLabel>\d+).*$')
     match = reg.match(lineContent)
     if match:
         return match.group('lineLabel')
@@ -73,7 +73,6 @@ def addTabs(tempFilePath, formattedFilePath):
         for lineNumber, lineContent in enumerate(fr):
             lineContent = lineContent.strip()
 
-            # try:
             lineLabelLoop       = doLoopWithLineLabel(lineContent)
             lineLabelContinue   = continueLine(lineContent)
 
@@ -97,11 +96,6 @@ def addTabs(tempFilePath, formattedFilePath):
 
             else:
                 mainList[currLevel].append((lineNumber, lineContent))
-            # except:
-            #     print sys.exc_info()
-            #     print 'ERROR!'
-            #     print 'currLevel ', currLevel
-            #     print lineNumber, lineContent
 
             totalLines = lineNumber
 
@@ -200,20 +194,11 @@ def extractFormattingLines(filePaths, outputResultFile):
                 for usage in lineLabels[key]['usages']:
                     fw.write('\t' + str(usage) + '\n')
 
-def getVariableListForFile(sourceFilePath):
-    if 'qprop.f' in sourceFilePath:
-        return ['WORK',	'RB',	'CL0B',	'CD0B',	'REREFB',	'R',	'CL0',
-        'CD0',	'REREF',	'VA',	'STALL',	'TP_C',	'QP_C',	'PARMOT',
-        'PMLAB',	'CB',	'DCLDAB',	'CD2UB',	'REEXPB',	'C',
-        'DCLDA',	'CD2U',	'REEXP',	'VT',	'TP_B',	'QP_B',	'BB','CLMINB',
-        'CD2LB',	'MCRITB',	'B',	'CLMIN',	'CD2L',	'MCRIT',	'CL',
-        'CLMAXB',	'CLCD0B',	'DR',	'CLMAX',	'CLCD0',	'CD', 'RVAL', 'IVAL']
-
 def fortranRangeTwoParam(fromNum, toNum):
     return range(fromNum-1, toNum)
 
-def replaceVariableParenthesis(mainSourceFile, sourceFile, tempFile):
-    variableNames = getVariableListForFile(mainSourceFile)
+def replaceVariableParenthesis(variableNames, sourceFile, tempFile):
+    # variableNames = getVariableListForFile(mainSourceFile)
     varRegExStrings = [ (var, var + r'\((?P<index>((?!\)).)*)\)') for var in variableNames]
 
     with open(sourceFile, 'r') as fr:
@@ -245,6 +230,7 @@ def replaceVariableDeclerations(sourceFile, tempFile):
     integerRegEx    = re.compile(r'^\s*INTEGER(?P<variables>.*)$')
     varArrayRegEx   = re.compile(r'(?P<varName>.+)\s*\((?P<arrayLength>((?!\)).)+)\)')
 
+    fileVariableList =[]
     formattedLines = []
     with open(sourceFile, 'r') as fr:
         for line in fr:
@@ -280,10 +266,13 @@ def replaceVariableDeclerations(sourceFile, tempFile):
                         varArray    = varArrayRegEx.match(variable)
                         if varArray:
                             varArrayList.append(varArray.group('varName'))
+                            fileVariableList.append(varArray.group('varName'))
                             varArrayLengthList.append(varArray.group('arrayLength'))
                         else:
                             varList.append(variable)
+                            fileVariableList.append(variable)
 
+                    # multiple arrays declared in one line
                     if len(varArrayList) > 0:
                         formattedLine = ''
                         for varName in varArrayList[:-1]:
@@ -292,6 +281,8 @@ def replaceVariableDeclerations(sourceFile, tempFile):
                         for arrayLength in varArrayLengthList[:-1]:
                             formattedLine += '[' + str(initialValue) + ']*' + arrayLength + ' ,'
                         formattedLine += '[' + str(initialValue) + ']*' + varArrayLengthList[-1] + '\n'
+
+                    # multiple single valued variables declared in one line
                     else:
                         formattedLine = ''
                         for varName in varList[:-1]:
@@ -300,11 +291,19 @@ def replaceVariableDeclerations(sourceFile, tempFile):
                         for varName in varList[:-1]:
                             formattedLine += str(initialValue) + ','
                         formattedLine += str(initialValue) + '\n'
+
+                # Single declaration
                 else:
                     varArray    = varArrayRegEx.match(data)
+
+                    #Single array declared
                     if varArray:
+                        fileVariableList.append(varArray.group('varName'))
                         formattedLine = varArray.group('varName') + ' = ' + '[' + str(initialValue) + ']*' + varArray.group('arrayLength') + '\n'
+
+                    #Single variable declared
                     else:
+                        fileVariableList.append(data)
                         formattedLine = data + ' = ' + initialValue + '\n'
 
             if parameter:
@@ -318,18 +317,21 @@ def replaceVariableDeclerations(sourceFile, tempFile):
         for line in formattedLines:
             fw.write(line)
 
+    return fileVariableList
+
 
 
 
 if __name__ == '__main__':
-    sourceFilePath      = 'qprop_source/src/motor.f'
-    sourceFilePath      = 'qprop_source/src/spline.f'
-    sourceFilePath      = 'qprop_source/src/qmil.f'
+    # sourceFilePath      = 'qprop_source/src/motor.f'
+    # sourceFilePath      = 'qprop_source/src/spline.f'
+    # sourceFilePath      = 'qprop_source/src/qmil.f'
 
 
+    # sourceFilePath      = 'qprop_source/src/qprop.f'
+    sourceFilePath      = 'qprop_python/test.f'
     sourceFilePath      = 'qprop_source/src/bnsolv.f'
 
-    sourceFilePath      = 'qprop_source/src/qprop.f'
     tempFilePath        = 'qprop_parsed/parsedFile1.f'
     tempFilePath2       = 'qprop_parsed/parsedFile2.py'
     tempFilePath3       = 'qprop_parsed/parsedFile3.py'
@@ -338,9 +340,9 @@ if __name__ == '__main__':
 
 
 
-    collapseMultiLines(sourceFilePath, tempFilePath)
+    collapseMultiLines(                             sourceFilePath, tempFilePath)
     #extractFormattingLines([tempFilePath], 'qprop_parsed/formattingLines.txt')
-    replaceVariableDeclerations(tempFilePath, tempFilePath2)
-    addTabs(tempFilePath2, tempFilePath3)
-    replaceVariableParenthesis(sourceFilePath, tempFilePath3, tempFilePath4)
-    replaceCommands(tempFilePath4, formattedFilePath)
+    fileVariableList = replaceVariableDeclerations( tempFilePath, tempFilePath2)
+    addTabs(                                        tempFilePath2, tempFilePath3)
+    replaceVariableParenthesis(fileVariableList,    tempFilePath3, tempFilePath4)
+    replaceCommands(                                tempFilePath4, formattedFilePath)
