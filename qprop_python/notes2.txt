@@ -1,10 +1,13 @@
-variable declarations
+dimension declaration
+3D arrays
+some variable parenthesis are not being parsed - tqcalc 288 DR(I)
+spline broke the tabbing algorithm
+
 write statements
 format statements
 read statements
-for and index correction would clash
-  for index = 0 to N
-    var[index - 1] ---- first one is negative one
-  if a variable is in a for loop then do not add the negative one
 go to statements
 open statements
+
+
+for loop range should be set from 1, to max+1

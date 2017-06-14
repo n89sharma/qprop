@@ -324,13 +324,16 @@ def replaceVariableDeclerations(sourceFile, tempFile):
 
 if __name__ == '__main__':
     # sourceFilePath      = 'qprop_source/src/motor.f'
-    # sourceFilePath      = 'qprop_source/src/spline.f'
-    # sourceFilePath      = 'qprop_source/src/qmil.f'
 
 
-    # sourceFilePath      = 'qprop_source/src/qprop.f'
-    sourceFilePath      = 'qprop_python/test.f'
     sourceFilePath      = 'qprop_source/src/bnsolv.f'
+    sourceFilePath      = 'qprop_python/test.f'
+    sourceFilePath      = 'qprop_source/src/qprop.f'
+    sourceFilePath      = 'qprop_source/src/gvcalc.f'
+    sourceFilePath      = 'qprop_source/src/tpdes.f'
+    sourceFilePath      = 'qprop_source/src/tqcalc.f'
+    sourceFilePath      = 'qprop_source/src/spline.f'
+    sourceFilePath      = 'qprop_source/src/qmil.f'
 
     tempFilePath        = 'qprop_parsed/parsedFile1.f'
     tempFilePath2       = 'qprop_parsed/parsedFile2.py'
@@ -343,6 +346,7 @@ if __name__ == '__main__':
     collapseMultiLines(                             sourceFilePath, tempFilePath)
     #extractFormattingLines([tempFilePath], 'qprop_parsed/formattingLines.txt')
     fileVariableList = replaceVariableDeclerations( tempFilePath, tempFilePath2)
+    print fileVariableList
     addTabs(                                        tempFilePath2, tempFilePath3)
     replaceVariableParenthesis(fileVariableList,    tempFilePath3, tempFilePath4)
     replaceCommands(                                tempFilePath4, formattedFilePath)
