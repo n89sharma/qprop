@@ -332,6 +332,7 @@ def replaceFormatLines(sourceFile, tempFile):
     formattingLines = {}
     writeLines ={}
     formattedLines = []
+    spacingIndicator = re.compile(r'(?P<indicator>(?P<width>\d+)X)')
     with open(sourceFile, 'r') as fr:
         for line in fr:
             writeMatch  = re.match(r'^\s*WRITE\s*\(.*,\s*(?P<lineLabel>\d+)\s*\)(?P<writeOptions>.*)$', line)
@@ -342,15 +343,24 @@ def replaceFormatLines(sourceFile, tempFile):
                 formattingOptions           = formatMatch.group('formattingOptions')
 
 
-                pythonFormatting = formattingOptions
-                pythonFormatting = re.sub(r'G(?P<width>\d+)\.(?P<decimal>\d+)', '{:\g<width>.\g<decimal>f}', pythonFormatting)
-                pythonFormatting = re.sub(r'I(?P<width>\d+)', '{:\g<width>d}', pythonFormatting)
-                pythonFormatting = re.sub(r'F(?P<width>\d+)\.(?P<decimal>\d+)', '{:\g<width>.\g<decimal>f}', pythonFormatting)
-                pythonFormatting = re.sub(r'A(?P<width>\d+)', '{:>\g<width>}', pythonFormatting)
-                pythonFormatting = re.sub(r'A', '{}', pythonFormatting)
-                formattingLines[lineLabel]  = {'formattingOptions': formattingOptions, 'pythonFormatting':''}
+                pythonFormatting    = formattingOptions.replace(' ', '')
+                pythonFormatting    = re.sub(r'G(?P<width>\d+)\.(?P<decimal>\d+)', '{:\g<width>.\g<decimal>f}', pythonFormatting)
+                pythonFormatting    = re.sub(r'I(?P<width>\d+)', '{:\g<width>d}', pythonFormatting)
+                pythonFormatting    = re.sub(r'F(?P<width>\d+)\.(?P<decimal>\d+)', '{:\g<width>.\g<decimal>f}', pythonFormatting)
+                pythonFormatting    = re.sub(r'A(?P<width>\d+)', '{:>\g<width>}', pythonFormatting)
+                pythonFormatting    = re.sub(r'A', '{}', pythonFormatting)
+                spacingMatches      = re.findall(spacingIndicator, pythonFormatting)
+                if len(spacingMatches) > 0:
+                    for declaration, width in spacingMatches:
+                        spacing = '\'' + ' '*int(width) + '\''
 
-                formattedLines.append(pythonFormatting + '\n')
+                        pythonFormatting = re.sub(declaration, spacing, pythonFormatting)
+
+                pythonFormatting = ''.join(iter(pythonFormatting.split(',')))
+                pythonFormatting = pythonFormatting.replace('\'', '')
+                pythonFormatting = '\'' + pythonFormatting + '\'\n'
+                formattingLines[lineLabel]  = {'formattingOptions': formattingOptions, 'pythonFormatting':''}
+                formattedLines.append(pythonFormatting)
 
             elif writeMatch:
                 lineLabel               = writeMatch.group('lineLabel')

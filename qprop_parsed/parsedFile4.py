@@ -111,7 +111,7 @@ PROGRAM QPROP
 	C
 	IF(ARGP1.EQ.' ') THEN
 		WRITE(*,1005)
-		/' QPROP usage:'//' % qprop propfile motorfile Vel Rpm ','[ Volt dBeta Thrust Torque {}mps Pele ]','   (single-point)'//' % qprop propfile motorfile Vel1,Vel2,dVel Rpm ["]           ','   (multi-point 1-parameter sweep over Vel, Rpm set)'//' % qprop propfile motorfile Vel1,Vel2,dVel 0 Volt ["]        ','   (multi-point 1-parameter sweep over Vel, Volt set)'//' % qprop propfile motorfile Vel1,Vel2,dVel Rpm1,Rpm2,dRpm ["]','   (multi-point 2-parameter sweep over Vel and Rpm)'//' % qprop propfile motorfile runfile                          ','   (multi-point, via file specification)'
+		'/QPROPusage://%qproppropfilemotorfileVelRpm[VoltdBetaThrustTorque{}mpsPele](single-point)//%qproppropfilemotorfileVel1Vel2dVelRpm["](multi-point1-parametersweepoverVelRpmset)//%qproppropfilemotorfileVel1Vel2dVel0Volt["](multi-point1-parametersweepoverVelVoltset)//%qproppropfilemotorfileVel1Vel2dVelRpm1Rpm2dRpm["](multi-point2-parametersweepoverVelandRpm)//%qproppropfilemotorfilerunfile(multi-pointviafilespecification)'
 		# part of multi line command.
 		# part of multi line command.
 		# part of multi line command.
@@ -249,7 +249,7 @@ PROGRAM QPROP
 	LRDUMP = .FALSE.
 	C
 	C==========================================================
-	{}
+	'{}'
 	C
 	C----------------------------------------------------
 	C---- read prop data file
@@ -419,7 +419,7 @@ PROGRAM QPROP
 	C
 	IF(RAD .LT. RB(NR)) THEN
 		WRITE(*,1050) RAD, RB(NR)
-		/' Given on line 2:  R =', {:12.4f},/' Last r station :  r =', {:12.4f},//' Must have  R > r' /
+		'/Givenonline2:R={:12.4f}/Lastrstation:r={:12.4f}//MusthaveR>r/'
 		# part of multi line command.
 		# part of multi line command.
 		STOP
@@ -797,7 +797,7 @@ PROGRAM QPROP
 		DO I = 1, N
 			IRE = INT( REREF(I) )
 			WRITE(*,1070) I, R(I), C(I), B(I)*180.0/PI, IRE
-			1X,{:3d}, {:9.4f}, {:9.4f}, {:9.3f}, {:9d}
+			' {:3d}{:9.4f}{:9.4f}{:9.3f}{:9d}'
 		ENDDO
 		WRITE(*,*)
 		STOP
@@ -810,10 +810,10 @@ PROGRAM QPROP
 	LU = 6
 	WRITE(*,*)
 	C
-	'# QPROP Version', {:5.2f}
-	'# ', {},{},{},{}
-	'#  ', {:12.5f}, 1X, {}
-	'#   rho =', {:12.5f},' kg/m^3'/'#   mu  =', {:12.5f},' kg/m-s'/'#   a   =', {:12.5f},' m/s   '
+	'#QPROPVersion{:5.2f}'
+	'#{}{}{}{}'
+	'#{:12.5f} {}'
+	'#rho={:12.5f}kg/m^3/#mu={:12.5f}kg/m-s/#a={:12.5f}m/s'
 	# part of multi line command.
 	# part of multi line command.
 	C
@@ -1198,7 +1198,7 @@ PROGRAM QPROP
 				# part of multi line command.
 				# part of multi line command.
 				# part of multi line command.
-				{},{:8.3f},  {:12.4f},  {:7.3f}, {:12.4f}, {:12.4f}, {:12.4f},{:8.3f}, {:10.4f},  {:9.4f}, {:9.4f}, {:10.5f}, {:12.4f}, {:12.4f}, {:9.4f},{:9.4f}, {:12.4f}, {:12.4f}, {:9.4f}, {:12.4f}
+				'{}{:8.3f}{:12.4f}{:7.3f}{:12.4f}{:12.4f}{:12.4f}{:8.3f}{:10.4f}{:9.4f}{:9.4f}{:10.5f}{:12.4f}{:12.4f}{:9.4f}{:9.4f}{:12.4f}{:12.4f}{:9.4f}{:12.4f}'
 				# part of multi line command.
 				# part of multi line command.
 				# part of multi line command.
@@ -1249,7 +1249,7 @@ PROGRAM QPROP
 			WRITE(LU,3100)RU,   CU,   BU, CL(I), CD(I),IRE,  AMA, EFFI, EFFP, WA, ASWIRL, ADW
 			# part of multi line command.
 			# part of multi line command.
-			1X,{:8.4f}, {:8.4f}, {:8.3f}, {:9.4f},  {:9.5f},{:9d}, {:7.3f}, {:9.4f}, {:9.4f}, {:12.4f}, {:12.4f}, {:12.4f}
+			' {:8.4f}{:8.4f}{:8.3f}{:9.4f}{:9.5f}{:9d}{:7.3f}{:9.4f}{:9.4f}{:12.4f}{:12.4f}{:12.4f}'
 			# part of multi line command.
 		ENDDO
 	ENDIF
@@ -1258,14 +1258,14 @@ PROGRAM QPROP
 	C
 	900  CONTINUE
 	WRITE(*,9000) FILNAM(1:64), ILINE, LINE
-	/' Read error'/'   in file:  ', {}/'   line',{:3d},':  ', {}
+	'/Readerror/infile:{}/line{:3d}:{}'
 	# part of multi line command.
 	# part of multi line command.
 	STOP
 	C
 	950  CONTINUE
 	WRITE(*,9500) FILNAM(1:64), ILINE
-	/' Unexpected end-of-file reached'/'   in file:  ', {}/'   line',{:3d}
+	'/Unexpectedend-of-filereached/infile:{}/line{:3d}'
 	# part of multi line command.
 	# part of multi line command.
 	STOP
@@ -1273,7 +1273,7 @@ PROGRAM QPROP
 	C
 	980  CONTINUE
 	WRITE(*,9500) FILNAM(1:64), ILINE
-	/' Fewer parameters than required'/'   in file:  ', {}/'   line',{:3d}
+	'/Fewerparametersthanrequired/infile:{}/line{:3d}'
 	# part of multi line command.
 	# part of multi line command.
 	STOP
