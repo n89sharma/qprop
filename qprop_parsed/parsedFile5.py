@@ -147,7 +147,7 @@ PROGRAM QPROP
 	C---- number of radial stations
 	NR = 7
 	C
-	C---- linear CL(alpha) function
+	C---- linear CL[alpha - 1] function
 	C     CL  =  CL0 + DCLCD*alpha  ,  clipped if outside range  CLMIN..CLMAX
 	DO IR = 1, NR
 		CL0B(IR) = 0.5
@@ -156,7 +156,7 @@ PROGRAM QPROP
 		CLMAXB(IR) = 1.2
 	ENDDO
 	C
-	C---- quadratic CD(CL,Re) function
+	C---- quadratic CD[CL,Re - 1] function
 	C     CD  =  [ CD0 + CD2*(CL-CLCD0)**2 ] * [Re/REREF]^REEXP
 	DO IR = 1, NR
 		CD0B(IR) = 0.028
@@ -201,7 +201,7 @@ PROGRAM QPROP
 	BB(6) =  4.6
 	BB(7) =  4.2
 	C
-	RAD = RB(NR)
+	RAD = RB[NR - 1]
 	C
 	C----------------------------------------------------
 	C---- default motor/gear combo
@@ -272,9 +272,9 @@ PROGRAM QPROP
 	IF(IERR.EQ.+1) GO TO 900
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 1) GO TO 980
-	BLDS = RVAL(1)
+	BLDS = RVAL[1 - 1]
 	IF(NVAL.GE.2) THEN
-		RAD = RVAL(2)
+		RAD = RVAL[2 - 1]
 	ELSE
 		RAD = 0.
 	ENDIF
@@ -285,8 +285,8 @@ PROGRAM QPROP
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 2) GO TO 980
 	DO IR = 1, IRDIM
-		CL0B(IR)   = RVAL(1)
-		DCLDAB(IR) = RVAL(2)
+		CL0B(IR)   = RVAL[1 - 1]
+		DCLDAB(IR) = RVAL[2 - 1]
 	ENDDO
 	C
 	NVAL = 2
@@ -295,8 +295,8 @@ PROGRAM QPROP
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 2) GO TO 980
 	DO IR = 1, IRDIM
-		CLMINB(IR) = RVAL(1)
-		CLMAXB(IR) = RVAL(2)
+		CLMINB(IR) = RVAL[1 - 1]
+		CLMAXB(IR) = RVAL[2 - 1]
 	ENDDO
 	C
 	NVAL = 4
@@ -305,10 +305,10 @@ PROGRAM QPROP
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 3) GO TO 980
 	DO IR = 1, IRDIM
-		CD0B(IR)   = RVAL(1)
-		CD2UB(IR)  = RVAL(2)
-		CD2LB(IR)  = RVAL(3)
-		CLCD0B(IR) = RVAL(4)
+		CD0B(IR)   = RVAL[1 - 1]
+		CD2UB(IR)  = RVAL[2 - 1]
+		CD2LB(IR)  = RVAL[3 - 1]
+		CLCD0B(IR) = RVAL[4 - 1]
 	ENDDO
 	C
 	NVAL = 2
@@ -317,8 +317,8 @@ PROGRAM QPROP
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 2) GO TO 980
 	DO IR = 1, IRDIM
-		REREFB(IR) = RVAL(1)
-		REEXPB(IR) = RVAL(2)
+		REREFB(IR) = RVAL[1 - 1]
+		REEXPB(IR) = RVAL[2 - 1]
 	ENDDO
 	C
 	C
@@ -327,18 +327,18 @@ PROGRAM QPROP
 	IF(IERR.EQ.+1) GO TO 900
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 3) GO TO 980
-	RFAC = RVAL(1)
-	CFAC = RVAL(2)
-	BFAC = RVAL(3)
+	RFAC = RVAL[1 - 1]
+	CFAC = RVAL[2 - 1]
+	BFAC = RVAL[3 - 1]
 	C
 	NVAL = 3
 	CALL RREAD(LU,LINE,ILINE,IERR,NVAL,RVAL)
 	IF(IERR.EQ.+1) GO TO 900
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 3) GO TO 980
-	RADD = RVAL(1)
-	CADD = RVAL(2)
-	BADD = RVAL(3)
+	RADD = RVAL[1 - 1]
+	CADD = RVAL[2 - 1]
+	BADD = RVAL[3 - 1]
 	C
 	KR = 0
 	C
@@ -352,22 +352,22 @@ PROGRAM QPROP
 	C
 	KR = KR + 1
 	IR = MIN( KR , IRDIM )
-	RB(IR) = RVAL(1)
-	CB(IR) = RVAL(2)
-	BB(IR) = RVAL(3)
+	RB(IR) = RVAL[1 - 1]
+	CB(IR) = RVAL[2 - 1]
+	BB(IR) = RVAL[3 - 1]
 	C
 	MCRITB(IR) = MCRIT0
 	C
-	IF(NVAL.GE. 4) CL0B(IR)   = RVAL( 4)
-	IF(NVAL.GE. 5) DCLDAB(IR) = RVAL( 5)
-	IF(NVAL.GE. 6) CLMINB(IR) = RVAL( 6)
-	IF(NVAL.GE. 7) CLMAXB(IR) = RVAL( 7)
-	IF(NVAL.GE. 8) CD0B(IR)   = RVAL( 8)
-	IF(NVAL.GE. 9) CD2UB(IR)  = RVAL( 9)
-	IF(NVAL.GE.10) CD2LB(IR)  = RVAL(10)
-	IF(NVAL.GE.11) CLCD0B(IR) = RVAL(11)
-	IF(NVAL.GE.12) REREFB(IR) = RVAL(12)
-	IF(NVAL.GE.13) REEXPB(IR) = RVAL(13)
+	IF(NVAL.GE. 4) CL0B[IR - 1]   = RVAL[ 4 - 1]
+	IF(NVAL.GE. 5) DCLDAB[IR - 1] = RVAL[ 5 - 1]
+	IF(NVAL.GE. 6) CLMINB[IR - 1] = RVAL[ 6 - 1]
+	IF(NVAL.GE. 7) CLMAXB[IR - 1] = RVAL[ 7 - 1]
+	IF(NVAL.GE. 8) CD0B[IR - 1]   = RVAL[ 8 - 1]
+	IF(NVAL.GE. 9) CD2UB[IR - 1]  = RVAL[ 9 - 1]
+	IF(NVAL.GE.10) CD2LB[IR - 1]  = RVAL[10 - 1]
+	IF(NVAL.GE.11) CLCD0B[IR - 1] = RVAL[11 - 1]
+	IF(NVAL.GE.12) REREFB[IR - 1] = RVAL[12 - 1]
+	IF(NVAL.GE.13) REEXPB[IR - 1] = RVAL[13 - 1]
 	C
 	GO TO 14
 	C
@@ -385,7 +385,7 @@ PROGRAM QPROP
 	C
 	18   CONTINUE
 	WRITE(*,*)
-	WRITE(*,*) 'Prop file not found:  ', FILNAM(1:48)
+	WRITE(*,*) 'Prop file not found:  ', FILNAM[1:48 - 1]
 	WRITE(*,*) 'Default prop used  :  ', PNAME
 	C
 	C
@@ -399,13 +399,13 @@ PROGRAM QPROP
 	C
 	C---- apply scaling factors
 	DO IR = 1, NR
-		RB(IR) =  RB(IR)*RFAC + RADD
-		CB(IR) =  CB(IR)*CFAC + CADD
+		RB(IR) =  RB[IR - 1]*RFAC + RADD
+		CB(IR) =  CB[IR - 1]*CFAC + CADD
 		BB(IR) = (BB(IR)*BFAC + BADD)* PI / 180.0
 	ENDDO
 	C
 	IF(RAD .EQ. 0.0) THEN
-		RAD = RB(NR)
+		RAD = RB[NR - 1]
 	ENDIF
 	C
 	DO IR = 1, NR-1
@@ -413,12 +413,12 @@ PROGRAM QPROP
 		# part of multi line command.
 		IF(RB(IR) .LT. 0.0)STOP 'Radii must be nonnegative'
 		# part of multi line command.
-		IF(RB(IR) .GE. RB(IR+1))STOP 'Radii must increase monotonically'
+		IF(RB(IR) .GE. RB[IR+1 - 1])STOP 'Radii must increase monotonically'
 		# part of multi line command.
 	ENDDO
 	C
-	IF(RAD .LT. RB(NR)) THEN
-		WRITE(*,1050) RAD, RB(NR)
+	IF(RAD .LT. RB[NR - 1]) THEN
+		WRITE(*,1050) RAD, RB[NR - 1]
 		/' Given on line 2:  R =', {:12.4f},/' Last r station :  r =', {:12.4f},//' Must have  R > r' /
 		# part of multi line command.
 		# part of multi line command.
@@ -452,7 +452,7 @@ PROGRAM QPROP
 	IF(IERR.EQ.+1) GO TO 900
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 1) GO TO 980
-	IMOTYPE = IVAL(1)
+	IMOTYPE = IVAL[1 - 1]
 	C
 	C---- extract parameters on data lines
 	DO IMPAR = 1, NMPDIM+1
@@ -465,10 +465,10 @@ PROGRAM QPROP
 			WRITE(*,*) '* Motor parameter array overflow. Increase NMPDIM'
 			STOP
 		ENDIF
-		PARMOT(IMPAR) = RVAL(1)
+		PARMOT(IMPAR) = RVAL[1 - 1]
 		KEX = INDEX(LINE,'!')
 		IF(KEX.GE.1) THEN
-			PMLAB(IMPAR) = LINE(KEX+1:80)
+			PMLAB(IMPAR) = LINE[KEX+1:80 - 1]
 		ELSE
 			PMLAB(IMPAR) = ' '
 		ENDIF
@@ -482,7 +482,7 @@ PROGRAM QPROP
 	C
 	28   CONTINUE
 	WRITE(*,*)
-	WRITE(*,*) 'Motor file not found:  ', FILNAM(1:48)
+	WRITE(*,*) 'Motor file not found:  ', FILNAM[1:48 - 1]
 	WRITE(*,*) 'Default motor used  :  ', MNAME
 	C
 	29   CONTINUE
@@ -505,9 +505,9 @@ PROGRAM QPROP
 	IF(IERR.EQ.+1) GO TO 900
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 3) GO TO 980
-	VEL1 = RVAL(1)
-	VEL2 = RVAL(2)
-	NVEL = INT( RVAL(3) + 0.01 )
+	VEL1 = RVAL[1 - 1]
+	VEL2 = RVAL[2 - 1]
+	NVEL = INT( RVAL[3 - 1] + 0.01 )
 	C
 	C---- extract parameters on data lines
 	NVAL = 3
@@ -515,9 +515,9 @@ PROGRAM QPROP
 	IF(IERR.EQ.+1) GO TO 900
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 3) GO TO 980
-	RPM1 = RVAL(1)
-	RPM2 = RVAL(2)
-	NRPM = INT( RVAL(3) + 0.01 )
+	RPM1 = RVAL[1 - 1]
+	RPM2 = RVAL[2 - 1]
+	NRPM = INT( RVAL[3 - 1] + 0.01 )
 	C
 	C---- extract parameters on data lines
 	NVAL = 3
@@ -525,9 +525,9 @@ PROGRAM QPROP
 	IF(IERR.EQ.+1) GO TO 900
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 3) GO TO 980
-	VOLT1 = RVAL(1)
-	VOLT2 = RVAL(2)
-	NVOLT = INT( RVAL(3) + 0.01 )
+	VOLT1 = RVAL[1 - 1]
+	VOLT2 = RVAL[2 - 1]
+	NVOLT = INT( RVAL[3 - 1] + 0.01 )
 	C
 	C---- extract parameters on data lines
 	NVAL = 3
@@ -538,9 +538,9 @@ PROGRAM QPROP
 		DBET2 = 0.0
 		NDBET = 0
 	ELSE
-		DBET1 = RVAL(1)
-		DBET2 = RVAL(2)
-		NDBET = INT( RVAL(3) + 0.01 )
+		DBET1 = RVAL[1 - 1]
+		DBET2 = RVAL[2 - 1]
+		NDBET = INT( RVAL[3 - 1] + 0.01 )
 	ENDIF
 	NDBET = MAX( 1 , NDBET )
 	C
@@ -552,9 +552,9 @@ PROGRAM QPROP
 		THRU2 = 0.0
 		NTHRU = 0
 	ELSE
-		THRU1 = RVAL(1)
-		THRU2 = RVAL(2)
-		NTHRU = INT( RVAL(3) + 0.01 )
+		THRU1 = RVAL[1 - 1]
+		THRU2 = RVAL[2 - 1]
+		NTHRU = INT( RVAL[3 - 1] + 0.01 )
 	ENDIF
 	NTHRU = MAX( 1 , NTHRU )
 	C
@@ -670,7 +670,7 @@ PROGRAM QPROP
 	C
 	80   CONTINUE
 	WRITE(*,*)
-	WRITE(*,*) 'Run parameter file not found: ', FILNAM(1:48)
+	WRITE(*,*) 'Run parameter file not found: ', FILNAM[1:48 - 1]
 	WRITE(*,*) 'Default velocities, voltages, pitch used'
 	C
 	82   CONTINUE
@@ -698,8 +698,8 @@ PROGRAM QPROP
 	C==========================================================
 	C
 	C---- set up finely-spaced radial arrays
-	R0 = RB(1)
-	R1 = RB(NR)
+	R0 = RB[1 - 1]
+	R1 = RB[NR - 1]
 	C
 	N = IDIM
 	DO I = 1, N
@@ -795,8 +795,8 @@ PROGRAM QPROP
 		WRITE(*,1100)' i   radius   chord     beta    Re_ref'
 		# part of multi line command.
 		DO I = 1, N
-			IRE = INT( REREF(I) )
-			WRITE(*,1070) I, R(I), C(I), B(I)*180.0/PI, IRE
+			IRE = INT( REREF[I - 1] )
+			WRITE(*,1070) I, R[I - 1], C[I - 1], B[I - 1]*180.0/PI, IRE
 			1X,{:3d}, {:9.4f}, {:9.4f}, {:9.3f}, {:9d}
 		ENDDO
 		WRITE(*,*)
@@ -823,7 +823,7 @@ PROGRAM QPROP
 	WRITE(LU,1100)
 	WRITE(LU,1100) MNAME
 	DO IMPAR=1, NMPAR
-		WRITE(LU,1110) PARMOT(IMPAR), PMLAB(IMPAR)
+		WRITE(LU,1110) PARMOT[IMPAR - 1], PMLAB[IMPAR - 1]
 	ENDDO
 	WRITE(LU,1100)
 	WRITE(LU,1120) RHO, RMU, VSO
@@ -940,8 +940,8 @@ PROGRAM QPROP
 				ELSEIF(LVOLTSET) THEN
 					C----------- guess using 80% radius effective pitch angle
 					I = MAX( 1 , (8*N)/10 )
-					RT = R(I)
-					BT = B(I) - CL0(I)/DCLDA(I) + DBE
+					RT = R[I - 1]
+					BT = B[I - 1] - CL0[I - 1]/DCLDA(I) + DBE
 					BT = MAX( 0.02 , MIN( 0.45*PI , BT ) )
 					IF(VEL.EQ.0.0) THEN
 						OMG = 1.0
@@ -952,8 +952,8 @@ PROGRAM QPROP
 				ELSE
 					C----------- guess using 80% radius effective pitch angle
 					I = MAX( 1 , (8*N)/10 )
-					RT = R(I)
-					BT = B(I) - CL0(I)/DCLDA(I) + DBE
+					RT = R[I - 1]
+					BT = B[I - 1] - CL0[I - 1]/DCLDA(I) + DBE
 					BT = MAX( 0.02 , MIN( 0.45*PI , BT ) )
 					IF(VEL.EQ.0.0) THEN
 						OMG = 1.0
@@ -1147,8 +1147,8 @@ PROGRAM QPROP
 				CLAVG = 0.
 				CDAVG = 0.
 				DO I = 1, N
-					WA = VEL + VA(I)
-					WT = OMG*R(I) - VT(I)
+					WA = VEL + VA[I - 1]
+					WT = OMG*R(I) - VT[I - 1]
 					WSQ = WA**2 + WT**2
 					DTSUM = DTSUM + WSQ*C(I)*DR(I)
 					CLAVG = CLAVG + WSQ*C(I)*DR(I)*CL(I)
@@ -1215,8 +1215,8 @@ PROGRAM QPROP
 		# part of multi line command.
 		C                              123456789012123456789012123456789012
 		DO I = 1, N
-			WA = VEL + VA(I)
-			WT = OMG*R(I) - VT(I)
+			WA = VEL + VA[I - 1]
+			WT = OMG*R(I) - VT[I - 1]
 			WSQ = WA**2 + WT**2
 			W = SQRT(WSQ)
 			C
@@ -1228,7 +1228,7 @@ PROGRAM QPROP
 			IF(WA.NE.0.0 .AND. WT.NE.0.0) THEN
 				ADW = (WA/WT) * (R(I)/RAD)
 				EFFI = (VEL/(OMG*R(I))) * (WT/WA)
-				EFFP = (CL(I) - CD(I)*WA/WT)/ (CL(I) + CD(I)*WT/WA)
+				EFFP = (CL(I) - CD[I - 1]*WA/WT)/ (CL(I) + CD[I - 1]*WT/WA)
 				# part of multi line command.
 			ELSE
 				ADW = 0.
@@ -1239,14 +1239,14 @@ PROGRAM QPROP
 			EFFI = MAX( -99.0 , MIN( 99.0 , EFFI ) )
 			EFFP = MAX( -99.0 , MIN( 99.0 , EFFP ) )
 			C
-			RU = R(I)
-			CU = C(I)
-			BU = B(I) * 180.0/PI
+			RU = R[I - 1]
+			CU = C[I - 1]
+			BU = B[I - 1] * 180.0/PI
 			C
 			C------- swirl flow angle in non-rotating frame
-			ASWIRL = ATAN2( VT(I) , WA ) * 180.0/PI
+			ASWIRL = ATAN2( VT[I - 1] , WA ) * 180.0/PI
 			C
-			WRITE(LU,3100)RU,   CU,   BU, CL(I), CD(I),IRE,  AMA, EFFI, EFFP, WA, ASWIRL, ADW
+			WRITE(LU,3100)RU,   CU,   BU, CL[I - 1], CD[I - 1],IRE,  AMA, EFFI, EFFP, WA, ASWIRL, ADW
 			# part of multi line command.
 			# part of multi line command.
 			1X,{:8.4f}, {:8.4f}, {:8.3f}, {:9.4f},  {:9.5f},{:9d}, {:7.3f}, {:9.4f}, {:9.4f}, {:12.4f}, {:12.4f}, {:12.4f}
@@ -1257,14 +1257,14 @@ PROGRAM QPROP
 	STOP
 	C
 	900  CONTINUE
-	WRITE(*,9000) FILNAM(1:64), ILINE, LINE
+	WRITE(*,9000) FILNAM[1:64 - 1], ILINE, LINE
 	/' Read error'/'   in file:  ', {}/'   line',{:3d},':  ', {}
 	# part of multi line command.
 	# part of multi line command.
 	STOP
 	C
 	950  CONTINUE
-	WRITE(*,9500) FILNAM(1:64), ILINE
+	WRITE(*,9500) FILNAM[1:64 - 1], ILINE
 	/' Unexpected end-of-file reached'/'   in file:  ', {}/'   line',{:3d}
 	# part of multi line command.
 	# part of multi line command.
@@ -1272,7 +1272,7 @@ PROGRAM QPROP
 	C
 	C
 	980  CONTINUE
-	WRITE(*,9500) FILNAM(1:64), ILINE
+	WRITE(*,9500) FILNAM[1:64 - 1], ILINE
 	/' Fewer parameters than required'/'   in file:  ', {}/'   line',{:3d}
 	# part of multi line command.
 	# part of multi line command.

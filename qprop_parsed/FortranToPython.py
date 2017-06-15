@@ -328,6 +328,43 @@ def replaceVariableDeclerations(sourceFile, tempFile):
 
     return fileVariableList
 
+def replaceFormatLines(sourceFile, tempFile):
+    formattingLines = {}
+    writeLines ={}
+    formattedLines = []
+    with open(sourceFile, 'r') as fr:
+        for line in fr:
+            writeMatch  = re.match(r'^\s*WRITE\s*\(.*,\s*(?P<lineLabel>\d+)\s*\)(?P<writeOptions>.*)$', line)
+            formatMatch = re.match(r'^\s*(?P<lineLabel>\d+)\s+FORMAT\s*\((?P<formattingOptions>.*)\).*$', line)
+
+            if formatMatch:
+                lineLabel                   = formatMatch.group('lineLabel')
+                formattingOptions           = formatMatch.group('formattingOptions')
+
+
+                pythonFormatting = formattingOptions
+                pythonFormatting = re.sub(r'G(?P<width>\d+)\.(?P<decimal>\d+)', '{:\g<width>.\g<decimal>f}', pythonFormatting)
+                pythonFormatting = re.sub(r'I(?P<width>\d+)', '{:\g<width>d}', pythonFormatting)
+                pythonFormatting = re.sub(r'F(?P<width>\d+)\.(?P<decimal>\d+)', '{:\g<width>.\g<decimal>f}', pythonFormatting)
+                pythonFormatting = re.sub(r'A(?P<width>\d+)', '{:>\g<width>}', pythonFormatting)
+                pythonFormatting = re.sub(r'A', '{}', pythonFormatting)
+                formattingLines[lineLabel]  = {'formattingOptions': formattingOptions, 'pythonFormatting':''}
+
+                formattedLines.append(pythonFormatting + '\n')
+
+            elif writeMatch:
+                lineLabel               = writeMatch.group('lineLabel')
+                writeOptions            = writeMatch.group('writeOptions')
+                writeLines[lineLabel]   = {'writeOptions': writeOptions, 'pythonFormatting':''}
+
+                formattedLines.append(line)
+
+            else:
+                formattedLines.append(line)
+
+    with open(tempFile, 'w') as fw:
+        for line in formattedLines:
+            fw.write(line)
 
 
 
@@ -337,25 +374,26 @@ if __name__ == '__main__':
 
     sourceFilePath      = 'qprop_source/src/bnsolv.f'
     sourceFilePath      = 'qprop_python/test.f'
-    sourceFilePath      = 'qprop_source/src/qprop.f'
     sourceFilePath      = 'qprop_source/src/gvcalc.f'
     sourceFilePath      = 'qprop_source/src/tpdes.f'
     sourceFilePath      = 'qprop_source/src/qmil.f'
     sourceFilePath      = 'qprop_source/src/spline.f'
     sourceFilePath      = 'qprop_source/src/tqcalc.f'
+    sourceFilePath      = 'qprop_source/src/qprop.f'
 
     tempFilePath        = 'qprop_parsed/parsedFile1.f'
     tempFilePath2       = 'qprop_parsed/parsedFile2.py'
     tempFilePath3       = 'qprop_parsed/parsedFile3.py'
     tempFilePath4       = 'qprop_parsed/parsedFile4.py'
+    tempFilePath5       = 'qprop_parsed/parsedFile5.py'
     formattedFilePath   = 'qprop_parsed/finalParsedFile.py'
 
 
 
     collapseMultiLines(                             sourceFilePath, tempFilePath)
     #extractFormattingLines([tempFilePath], 'qprop_parsed/formattingLines.txt')
-    fileVariableList = replaceVariableDeclerations( tempFilePath, tempFilePath2)
-    print fileVariableList
-    addTabs(                                        tempFilePath2, tempFilePath3)
-    replaceVariableParenthesis(fileVariableList,    tempFilePath3, tempFilePath4)
-    replaceCommands(                                tempFilePath4, formattedFilePath)
+    fileVariableList = replaceVariableDeclerations( tempFilePath,   tempFilePath2)
+    replaceFormatLines(                             tempFilePath2,  tempFilePath3)
+    addTabs(                                        tempFilePath3,  tempFilePath4)
+    replaceVariableParenthesis(fileVariableList,    tempFilePath4,  tempFilePath5)
+    replaceCommands(                                tempFilePath5,  formattedFilePath)
