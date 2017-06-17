@@ -110,8 +110,8 @@ def QPROP ():
 	GETARG0 (10,ARGP10)
 	#
 	if (ARGP1.EQ.' '):
-		WRITE(*,1005)
-		'/QPROPusage://%qproppropfilemotorfileVelRpm[VoltdBetaThrustTorque{}mpsPele](single-point)//%qproppropfilemotorfileVel1Vel2dVelRpm["](multi-point1-parametersweepoverVelRpmset)//%qproppropfilemotorfileVel1Vel2dVel0Volt["](multi-point1-parametersweepoverVelVoltset)//%qproppropfilemotorfileVel1Vel2dVelRpm1Rpm2dRpm["](multi-point2-parametersweepoverVelandRpm)//%qproppropfilemotorfilerunfile(multi-pointviafilespecification)'
+		print '\nQPROPusage:\n\n%qproppropfilemotorfileVelRpm[VoltdBetaThrustTorque{}mpsPele](single-point)\n\n%qproppropfilemotorfileVel1Vel2dVelRpm["](multi-point1-parametersweepoverVelRpmset)\n\n%qproppropfilemotorfileVel1Vel2dVel0Volt["](multi-point1-parametersweepoverVelVoltset)\n\n%qproppropfilemotorfileVel1Vel2dVelRpm1Rpm2dRpm["](multi-point2-parametersweepoverVelandRpm)\n\n%qproppropfilemotorfilerunfile(multi-pointviafilespecification)'.format()
+		# 1005  FORMAT(/' QPROP usage:'//' % qprop propfile motorfile Vel Rpm ','[ Volt dBeta Thrust Torque Amps Pele ]','   (single-point)'//' % qprop propfile motorfile Vel1,Vel2,dVel Rpm ["]           ','   (multi-point 1-parameter sweep over Vel, Rpm set)'//' % qprop propfile motorfile Vel1,Vel2,dVel 0 Volt ["]        ','   (multi-point 1-parameter sweep over Vel, Volt set)'//' % qprop propfile motorfile Vel1,Vel2,dVel Rpm1,Rpm2,dRpm ["]','   (multi-point 2-parameter sweep over Vel and Rpm)'//' % qprop propfile motorfile runfile                          ','   (multi-point, via file specification)')
 		# part of multi line command.
 		# part of multi line command.
 		# part of multi line command.
@@ -249,7 +249,7 @@ def QPROP ():
 	LRDUMP = False
 	#
 	#==========================================================
-	'{}'
+	# 1000 FORMAT(A)
 	#
 	#----------------------------------------------------
 	#---- read prop data file
@@ -418,8 +418,8 @@ def QPROP ():
 	#ENDDO
 	#
 	if (RAD < RB[NR - 1]):
-		WRITE(*,1050) RAD, RB[NR - 1]
-		'/Givenonline2:R={:12.4f}/Lastrstation:r={:12.4f}//MusthaveR>r/'
+		print '\nGivenonline2:R={:12.4f}\nLastrstation:r={:12.4f}\n\nMusthaveR>r\n'.format( RAD, RB[NR - 1])
+		# 1050  FORMAT(/' Given on line 2:  R =', G12.4,/' Last r station :  r =', G12.4,//' Must have  R > r' / )
 		# part of multi line command.
 		# part of multi line command.
 		raise SystemExit
@@ -792,12 +792,12 @@ def QPROP ():
 	#
 	if (ERROR):
 		print 
-		WRITE(*,1100)' i   radius   chord     beta    Re_ref'
+		print '#{}{}{}{}'.format(' i   radius   chord     beta    Re_ref')
 		# part of multi line command.
 		for I in fortranRangeTwoParam( 1, N ):
 			IRE = INT( REREF[I - 1] )
-			WRITE(*,1070) I, R[I - 1], C[I - 1], B[I - 1]*180.0/PI, IRE
-			' {:3d}{:9.4f}{:9.4f}{:9.3f}{:9d}'
+			print ' {:3d}{:9.4f}{:9.4f}{:9.3f}{:9d}'.format( I, R[I - 1], C[I - 1], B[I - 1]*180.0/PI, IRE)
+			# 1070     FORMAT(1X,I3, F9.4, F9.4, F9.3, I9)
 		#ENDDO
 		print 
 		raise SystemExit
@@ -810,31 +810,31 @@ def QPROP ():
 	LU = 6
 	print 
 	#
-	'#QPROPVersion{:5.2f}'
-	'#{}{}{}{}'
-	'#{:12.5f} {}'
-	'#rho={:12.5f}kg/m^3/#mu={:12.5f}kg/m-s/#a={:12.5f}m/s'
+	# 1105 FORMAT('# QPROP Version', F5.2)
+	# 1100 FORMAT('# ', A,A,A,A)
+	# 1110 FORMAT('#  ', G12.5, 1X, A)
+	# 1120 FORMAT('#   rho =', G12.5,' kg/m^3'/'#   mu  =', G12.5,' kg/m-s'/'#   a   =', G12.5,' m/s   ' )
 	# part of multi line command.
 	# part of multi line command.
 	#
-	WRITE(LU,1105) VERSION
-	WRITE(LU,1100)
-	WRITE(LU,1100) PNAME
-	WRITE(LU,1100)
-	WRITE(LU,1100) MNAME
+	LU.write('#QPROPVersion{:5.2f}'.format( VERSION))
+	LU.write('#{}{}{}{}'.format())
+	LU.write('#{}{}{}{}'.format( PNAME))
+	LU.write('#{}{}{}{}'.format())
+	LU.write('#{}{}{}{}'.format( MNAME))
 	for IMPAR in fortranRangeTwoParam( 1, NMPAR ):
-		WRITE(LU,1110) PARMOT[IMPAR - 1], PMLAB[IMPAR - 1]
+		LU.write('#{:12.5f} {}'.format( PARMOT[IMPAR - 1], PMLAB[IMPAR - 1]))
 	#ENDDO
-	WRITE(LU,1100)
-	WRITE(LU,1120) RHO, RMU, VSO
-	WRITE(LU,1100)
-	WRITE(LU,1100)' 1         2        3          4          5        ',' 6            7         8       9        10        11    ','    12          13        14        15      16          17   ','        18      19'
+	LU.write('#{}{}{}{}'.format())
+	LU.write('#rho={:12.5f}kg\nm^3\n#mu={:12.5f}kg\nm-s\n#a={:12.5f}m\ns'.format( RHO, RMU, VSO))
+	LU.write('#{}{}{}{}'.format())
+	LU.write('#{}{}{}{}'.format(' 1         2        3          4          5        ',' 6            7         8       9        10        11    ','    12          13        14        15      16          17   ','        18      19'))
 	# part of multi line command.
 	# part of multi line command.
 	# part of multi line command.
 	# part of multi line command.
-	WRITE(LU,1100)
-	WRITE(LU,1100)' V(m/s)    rpm      Dbeta      T(N)       Q(N-m)   ',' Pshaft(W)    Volts     Amps    effmot   effprop   adv   ','    CT          CP        DV(m/s)   eff     Pelec       Pprop','        cl_avg  cd_avg'
+	LU.write('#{}{}{}{}'.format())
+	LU.write('#{}{}{}{}'.format(' V(m/s)    rpm      Dbeta      T(N)       Q(N-m)   ',' Pshaft(W)    Volts     Amps    effmot   effprop   adv   ','    CT          CP        DV(m/s)   eff     Pelec       Pprop','        cl_avg  cd_avg'))
 	# part of multi line command.
 	# part of multi line command.
 	# part of multi line command.
@@ -1194,11 +1194,11 @@ def QPROP ():
 				CP = QP * WRI**2 * 2.0 / (RHO * PI * RAD**3)
 				DV = SQRT(VEL**2 + TP * 2.0/(RHO*PI*RAD**2)) - VEL
 				#
-				WRITE(LU,2100) CHARF,VEL,   RPM,  DBET,   TP,     QP, POWER,VOLT,AMPS,  EFFM,  EFFP, ADV, CT, CP, DV,EFF, PINPUT, PPROP, CLAVG, CDAVG
+				LU.write('{}{:8.3f}{:12.4f}{:7.3f}{:12.4f}{:12.4f}{:12.4f}{:8.3f}{:10.4f}{:9.4f}{:9.4f}{:10.5f}{:12.4f}{:12.4f}{:9.4f}{:9.4f}{:12.4f}{:12.4f}{:9.4f}{:12.4f}'.format( CHARF,VEL,   RPM,  DBET,   TP,     QP, POWER,VOLT,AMPS,  EFFM,  EFFP, ADV, CT, CP, DV,EFF, PINPUT, PPROP, CLAVG, CDAVG))
 				# part of multi line command.
 				# part of multi line command.
 				# part of multi line command.
-				'{}{:8.3f}{:12.4f}{:7.3f}{:12.4f}{:12.4f}{:12.4f}{:8.3f}{:10.4f}{:9.4f}{:9.4f}{:10.5f}{:12.4f}{:12.4f}{:9.4f}{:9.4f}{:12.4f}{:12.4f}{:9.4f}{:12.4f}'
+				# 2100       FORMAT(A,F8.3,  G12.4,  F7.3, G12.4, G12.4, G12.4,F8.3, F10.4,  F9.4, F9.4, F10.5, G12.4, G12.4, F9.4,F9.4, G12.4, G12.4, F9.4, G12.4)
 				# part of multi line command.
 				# part of multi line command.
 				# part of multi line command.
@@ -1209,8 +1209,8 @@ def QPROP ():
 	#
 	if (LRDUMP):
 		#----- dump radial distributions
-		WRITE(LU,1100)
-		WRITE(LU,1100)' radius   chord   beta      Cl       Cd       Re    Mach','     effi     effp    Wa(m/s)     Aswirl      adv_wake'
+		LU.write('#{}{}{}{}'.format())
+		LU.write('#{}{}{}{}'.format(' radius   chord   beta      Cl       Cd       Re    Mach','     effi     effp    Wa(m/s)     Aswirl      adv_wake'))
 		# part of multi line command.
 		# part of multi line command.
 		#                              123456789012123456789012123456789012
@@ -1246,10 +1246,10 @@ def QPROP ():
 			#------- swirl flow angle in non-rotating frame
 			ASWIRL = ATAN2( VT[I - 1] , WA ) * 180.0/PI
 			#
-			WRITE(LU,3100)RU,   CU,   BU, CL[I - 1], CD[I - 1],IRE,  AMA, EFFI, EFFP, WA, ASWIRL, ADW
+			LU.write(' {:8.4f}{:8.4f}{:8.3f}{:9.4f}{:9.5f}{:9d}{:7.3f}{:9.4f}{:9.4f}{:12.4f}{:12.4f}{:12.4f}'.format(RU,   CU,   BU, CL[I - 1], CD[I - 1],IRE,  AMA, EFFI, EFFP, WA, ASWIRL, ADW))
 			# part of multi line command.
 			# part of multi line command.
-			' {:8.4f}{:8.4f}{:8.3f}{:9.4f}{:9.5f}{:9d}{:7.3f}{:9.4f}{:9.4f}{:12.4f}{:12.4f}{:12.4f}'
+			# 3100    FORMAT(1X,F8.4, F8.4, F8.3, F9.4,  F9.5,I9, F7.3, F9.4, F9.4, G12.4, G12.4, G12.4)
 			# part of multi line command.
 		#ENDDO
 	#ENDIF
@@ -1257,23 +1257,23 @@ def QPROP ():
 	raise SystemExit
 	#
 	#900 CONTINUE
-	WRITE(*,9000) FILNAM[1:64 - 1], ILINE, LINE
-	'/Readerror/infile:{}/line{:3d}:{}'
+	print '\nReaderror\ninfile:{}\nline{:3d}:{}'.format( FILNAM[1:64 - 1], ILINE, LINE)
+	# 9000 FORMAT(/' Read error'/'   in file:  ', A/'   line',I3,':  ', A)
 	# part of multi line command.
 	# part of multi line command.
 	raise SystemExit
 	#
 	#950 CONTINUE
-	WRITE(*,9500) FILNAM[1:64 - 1], ILINE
-	'/Unexpectedend-of-filereached/infile:{}/line{:3d}'
+	print '\nUnexpectedend-of-filereached\ninfile:{}\nline{:3d}'.format( FILNAM[1:64 - 1], ILINE)
+	# 9500 FORMAT(/' Unexpected end-of-file reached'/'   in file:  ', A/'   line',I3)
 	# part of multi line command.
 	# part of multi line command.
 	raise SystemExit
 	#
 	#
 	#980 CONTINUE
-	WRITE(*,9500) FILNAM[1:64 - 1], ILINE
-	'/Fewerparametersthanrequired/infile:{}/line{:3d}'
+	print '\nUnexpectedend-of-filereached\ninfile:{}\nline{:3d}'.format( FILNAM[1:64 - 1], ILINE)
+	# 9800 FORMAT(/' Fewer parameters than required'/'   in file:  ', A/'   line',I3)
 	# part of multi line command.
 	# part of multi line command.
 	raise SystemExit

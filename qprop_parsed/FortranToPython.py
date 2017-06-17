@@ -330,20 +330,20 @@ def replaceVariableDeclerations(sourceFile, tempFile):
 
 def replaceFormatLines(sourceFile, tempFile):
     formattingLines = {}
-    writeLines ={}
-    formattedLines = []
+    writeLines = []
+    fileLines = {}
     spacingIndicator = re.compile(r'(?P<indicator>(?P<width>\d+)X)')
     with open(sourceFile, 'r') as fr:
-        for line in fr:
-            writeMatch  = re.match(r'^\s*WRITE\s*\(.*,\s*(?P<lineLabel>\d+)\s*\)(?P<writeOptions>.*)$', line)
+        for lineNumber, line in enumerate(fr):
+            writeMatch  = re.match(r'^\s*WRITE\s*\(\s*(?P<outputTarget>.+)\s*,\s*(?P<lineLabel>\d+)\s*\)(?P<writeOptions>.*)$', line)
             formatMatch = re.match(r'^\s*(?P<lineLabel>\d+)\s+FORMAT\s*\((?P<formattingOptions>.*)\).*$', line)
 
             if formatMatch:
                 lineLabel                   = formatMatch.group('lineLabel')
                 formattingOptions           = formatMatch.group('formattingOptions')
 
-
                 pythonFormatting    = formattingOptions.replace(' ', '')
+                pythonFormatting    = pythonFormatting.replace('/', '\\n')
                 pythonFormatting    = re.sub(r'G(?P<width>\d+)\.(?P<decimal>\d+)', '{:\g<width>.\g<decimal>f}', pythonFormatting)
                 pythonFormatting    = re.sub(r'I(?P<width>\d+)', '{:\g<width>d}', pythonFormatting)
                 pythonFormatting    = re.sub(r'F(?P<width>\d+)\.(?P<decimal>\d+)', '{:\g<width>.\g<decimal>f}', pythonFormatting)
@@ -356,27 +356,35 @@ def replaceFormatLines(sourceFile, tempFile):
 
                         pythonFormatting = re.sub(declaration, spacing, pythonFormatting)
 
-                pythonFormatting = ''.join(iter(pythonFormatting.split(',')))
-                pythonFormatting = pythonFormatting.replace('\'', '')
-                pythonFormatting = '\'' + pythonFormatting + '\'\n'
-                formattingLines[lineLabel]  = {'formattingOptions': formattingOptions, 'pythonFormatting':''}
-                formattedLines.append(pythonFormatting)
+                pythonFormatting            = ''.join(iter(pythonFormatting.split(',')))
+                pythonFormatting            = pythonFormatting.replace('\'', '')
+                pythonFormatting            = '\'' + pythonFormatting + '\'\n'
+                formattingLines[lineLabel]  = pythonFormatting
+                print pythonFormatting
+                fileLines[lineNumber]       = '# ' + line
 
             elif writeMatch:
                 lineLabel               = writeMatch.group('lineLabel')
                 writeOptions            = writeMatch.group('writeOptions')
-                writeLines[lineLabel]   = {'writeOptions': writeOptions, 'pythonFormatting':''}
+                outputTarget            = writeMatch.group('outputTarget')
+                writeLines.append((lineNumber, lineLabel, outputTarget, writeOptions))
 
-                formattedLines.append(line)
+                fileLines[lineNumber]   = line
 
             else:
-                formattedLines.append(line)
+                fileLines[lineNumber]   = line
 
-    with open(tempFile, 'w') as fw:
-        for line in formattedLines:
-            fw.write(line)
+    for lineNumber, lineLabel, outputTarget, writeOptions in writeLines:
+        if outputTarget == '*':
+            fileLines[lineNumber] = 'print ' + formattingLines[lineLabel].strip() + '.format(' + writeOptions + ')\n'
+        else:
+            fileLines[lineNumber] = outputTarget + '.write(' + formattingLines[lineLabel].strip() + '.format(' + writeOptions + '))\n'
 
+    finalFile = ['']*len(fileLines)
+    for lineNumber in fileLines:
+        finalFile[lineNumber] = fileLines[lineNumber]
 
+    writeListToFile(finalFile, tempFile)
 
 if __name__ == '__main__':
     # sourceFilePath      = 'qprop_source/src/motor.f'
