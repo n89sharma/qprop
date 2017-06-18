@@ -109,7 +109,7 @@ def QPROP ():
 	GETARG0 (9,ARGP9)
 	GETARG0 (10,ARGP10)
 	#
-	if (ARGP1.EQ.' '):
+	if ( ARGP1 == ' '): 
 		print '\nQPROPusage:\n\n%qproppropfilemotorfileVelRpm[VoltdBetaThrustTorque{}mpsPele](single-point)\n\n%qproppropfilemotorfileVel1Vel2dVelRpm["](multi-point1-parametersweepoverVelRpmset)\n\n%qproppropfilemotorfileVel1Vel2dVel0Volt["](multi-point1-parametersweepoverVelVoltset)\n\n%qproppropfilemotorfileVel1Vel2dVelRpm1Rpm2dRpm["](multi-point2-parametersweepoverVelandRpm)\n\n%qproppropfilemotorfilerunfile(multi-pointviafilespecification)'.format()
 		# 1005  FORMAT(/' QPROP usage:'//' % qprop propfile motorfile Vel Rpm ','[ Volt dBeta Thrust Torque Amps Pele ]','   (single-point)'//' % qprop propfile motorfile Vel1,Vel2,dVel Rpm ["]           ','   (multi-point 1-parameter sweep over Vel, Rpm set)'//' % qprop propfile motorfile Vel1,Vel2,dVel 0 Volt ["]        ','   (multi-point 1-parameter sweep over Vel, Volt set)'//' % qprop propfile motorfile Vel1,Vel2,dVel Rpm1,Rpm2,dRpm ["]','   (multi-point 2-parameter sweep over Vel and Rpm)'//' % qprop propfile motorfile runfile                          ','   (multi-point, via file specification)')
 		# part of multi line command.
@@ -128,7 +128,7 @@ def QPROP ():
 		print 
 		print  'Run with default inputs?  Y'
 		READ(*,1000) ANS
-		if (INDEX('Nn',ANS): != 0) STOP
+		if (INDEX('Nn',ANS) != 0): raise SystemExit
 		print 
 	#ENDIF
 	#
@@ -150,56 +150,56 @@ def QPROP ():
 	#---- linear CL[alpha - 1] function
 	#     CL  =  CL0 + DCLCD*alpha  ,  clipped if outside range  CLMIN..CLMAX
 	for IR in fortranRangeTwoParam( 1, NR ):
-		CL0B(IR) = 0.5
-		DCLDAB(IR) = 5.8
-		CLMINB(IR) = -0.4
-		CLMAXB(IR) = 1.2
+		CL0B[IR - 1] = 0.5
+		DCLDAB[IR - 1] = 5.8
+		CLMINB[IR - 1] = -0.4
+		CLMAXB[IR - 1] = 1.2
 	#ENDDO
 	#
 	#---- quadratic CD[CL,Re - 1] function
 	#     CD  =  [ CD0 + CD2*(CL-CLCD0)**2 ] * [Re/REREF]^REEXP
 	for IR in fortranRangeTwoParam( 1, NR ):
-		CD0B(IR) = 0.028
-		CD2UB(IR) = 0.050
-		CD2LB(IR) = 0.050
-		CLCD0B(IR) = 0.5
-		REREFB(IR) = 70000.0
-		REEXPB(IR) = -0.7
-		MCRITB(IR) = MCRIT0
+		CD0B[IR - 1] = 0.028
+		CD2UB[IR - 1] = 0.050
+		CD2LB[IR - 1] = 0.050
+		CLCD0B[IR - 1] = 0.5
+		REREFB[IR - 1] = 70000.0
+		REEXPB[IR - 1] = -0.7
+		MCRITB[IR - 1] = MCRIT0
 	#ENDDO
 	#
 	#---- radii
 	RFAC = 0.0254
 	RADD = 0.
-	RB(1) = 0.75
-	RB(2) = 1.00
-	RB(3) = 1.50
-	RB(4) = 2.00
-	RB(5) = 2.50
-	RB(6) = 2.875
-	RB(7) = 3.00
+	RB[1 - 1] = 0.75
+	RB[2 - 1] = 1.00
+	RB[3 - 1] = 1.50
+	RB[4 - 1] = 2.00
+	RB[5 - 1] = 2.50
+	RB[6 - 1] = 2.875
+	RB[7 - 1] = 3.00
 	#
 	#---- chords
 	CFAC = 0.0254
 	CADD = 0.
-	CB(1) = 0.66
-	CB(2) = 0.69
-	CB(3) = 0.63
-	CB(4) = 0.55
-	CB(5) = 0.44
-	CB(6) = 0.30
-	CB(7) = 0.19
+	CB[1 - 1] = 0.66
+	CB[2 - 1] = 0.69
+	CB[3 - 1] = 0.63
+	CB[4 - 1] = 0.55
+	CB[5 - 1] = 0.44
+	CB[6 - 1] = 0.30
+	CB[7 - 1] = 0.19
 	#
 	#---- blade angles
 	BFAC = 1.0
 	BADD = 0.
-	BB(1) = 27.5
-	BB(2) = 22.0
-	BB(3) = 15.2
-	BB(4) = 10.2
-	BB(5) =  6.5
-	BB(6) =  4.6
-	BB(7) =  4.2
+	BB[1 - 1] = 27.5
+	BB[2 - 1] = 22.0
+	BB[3 - 1] = 15.2
+	BB[4 - 1] = 10.2
+	BB[5 - 1] =  6.5
+	BB[6 - 1] =  4.6
+	BB[7 - 1] =  4.2
 	#
 	RAD = RB[NR - 1]
 	#
@@ -207,12 +207,12 @@ def QPROP ():
 	#---- default motor/gear combo
 	MNAME = "Speed-400 3321 (6V) direct drive"
 	IMOTYPE = 1
-	PARMOT(1) = 0.31    # Rmotor  (Ohms)
-	PARMOT(2) = 0.77    # Io      (Amps)
-	PARMOT(3) = 2760.0  # Kv      (rpm/Volt)
-	PMLAB(1) = 'R  (Ohm)'
-	PMLAB(2) = 'Io (Amp)'
-	PMLAB(3) = 'Kv (rpm/Volt)'
+	PARMOT[1 - 1] = 0.31    # Rmotor  (Ohms)
+	PARMOT[2 - 1] = 0.77    # Io      (Amps)
+	PARMOT[3 - 1] = 2760.0  # Kv      (rpm/Volt)
+	PMLAB[1 - 1] = 'R  (Ohm)'
+	PMLAB[2 - 1] = 'Io (Amp)'
+	PMLAB[3 - 1] = 'Kv (rpm/Volt)'
 	NMPAR = 3
 	#
 	#----------------------------------------------------
@@ -254,7 +254,7 @@ def QPROP ():
 	#----------------------------------------------------
 	#---- read prop data file
 	FILNAM = ARGP1
-	IF(FILNAM.EQ.' ') GO TO 18
+	IF( FILNAM == ' ') GO TO 18 
 	#
 	LU = 1
 	OPEN(LU,FILE=FILNAM,STATUS='OLD',ERR=18)
@@ -285,8 +285,8 @@ def QPROP ():
 	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 2) GO TO 980
 	for IR in fortranRangeTwoParam( 1, IRDIM ):
-		CL0B(IR)   = RVAL[1 - 1]
-		DCLDAB(IR) = RVAL[2 - 1]
+		CL0B[IR - 1]   = RVAL[1 - 1]
+		DCLDAB[IR - 1] = RVAL[2 - 1]
 	#ENDDO
 	#
 	NVAL = 2
@@ -295,8 +295,8 @@ def QPROP ():
 	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 2) GO TO 980
 	for IR in fortranRangeTwoParam( 1, IRDIM ):
-		CLMINB(IR) = RVAL[1 - 1]
-		CLMAXB(IR) = RVAL[2 - 1]
+		CLMINB[IR - 1] = RVAL[1 - 1]
+		CLMAXB[IR - 1] = RVAL[2 - 1]
 	#ENDDO
 	#
 	NVAL = 4
@@ -305,10 +305,10 @@ def QPROP ():
 	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 3) GO TO 980
 	for IR in fortranRangeTwoParam( 1, IRDIM ):
-		CD0B(IR)   = RVAL[1 - 1]
-		CD2UB(IR)  = RVAL[2 - 1]
-		CD2LB(IR)  = RVAL[3 - 1]
-		CLCD0B(IR) = RVAL[4 - 1]
+		CD0B[IR - 1]   = RVAL[1 - 1]
+		CD2UB[IR - 1]  = RVAL[2 - 1]
+		CD2LB[IR - 1]  = RVAL[3 - 1]
+		CLCD0B[IR - 1] = RVAL[4 - 1]
 	#ENDDO
 	#
 	NVAL = 2
@@ -317,8 +317,8 @@ def QPROP ():
 	IF( IERR == -1 ) GO TO 950
 	IF(NVAL< 2) GO TO 980
 	for IR in fortranRangeTwoParam( 1, IRDIM ):
-		REREFB(IR) = RVAL[1 - 1]
-		REEXPB(IR) = RVAL[2 - 1]
+		REREFB[IR - 1] = RVAL[1 - 1]
+		REEXPB[IR - 1] = RVAL[2 - 1]
 	#ENDDO
 	#
 	#
@@ -352,11 +352,11 @@ def QPROP ():
 	#
 	KR = KR + 1
 	IR = MIN( KR , IRDIM )
-	RB(IR) = RVAL[1 - 1]
-	CB(IR) = RVAL[2 - 1]
-	BB(IR) = RVAL[3 - 1]
+	RB[IR - 1] = RVAL[1 - 1]
+	CB[IR - 1] = RVAL[2 - 1]
+	BB[IR - 1] = RVAL[3 - 1]
 	#
-	MCRITB(IR) = MCRIT0
+	MCRITB[IR - 1] = MCRIT0
 	#
 	if (NVAL>= 4): CL0B[IR - 1]   = RVAL[ 4 - 1]
 	if (NVAL>= 5): DCLDAB[IR - 1] = RVAL[ 5 - 1]
@@ -399,9 +399,9 @@ def QPROP ():
 	#
 	#---- apply scaling factors
 	for IR in fortranRangeTwoParam( 1, NR ):
-		RB(IR) =  RB[IR - 1]*RFAC + RADD
-		CB(IR) =  CB[IR - 1]*CFAC + CADD
-		BB(IR) = (BB(IR)*BFAC + BADD)* PI / 180.0
+		RB[IR - 1] =  RB[IR - 1]*RFAC + RADD
+		CB[IR - 1] =  CB[IR - 1]*CFAC + CADD
+		BB[IR - 1] = (BB[IR - 1]*BFAC + BADD)* PI / 180.0
 	#ENDDO
 	#
 	if ( isClose(RAD, 0.0) ):
@@ -409,11 +409,11 @@ def QPROP ():
 	#ENDIF
 	#
 	for IR in fortranRangeTwoParam( 1, NR ):
-		if (CB(IR) <= 0.0): raise SystemExit('Chords must be positive')
+		if (CB[IR - 1] <= 0.0): raise SystemExit('Chords must be positive')
 		# part of multi line command.
-		if (RB(IR) < 0.0): raise SystemExit('Radii must be nonnegative')
+		if (RB[IR - 1] < 0.0): raise SystemExit('Radii must be nonnegative')
 		# part of multi line command.
-		if (RB(IR) >= RB[IR+1 - 1]): raise SystemExit('Radii must increase monotonically')
+		if (RB[IR - 1] >= RB[IR+1 - 1]): raise SystemExit('Radii must increase monotonically')
 		# part of multi line command.
 	#ENDDO
 	#
@@ -428,15 +428,15 @@ def QPROP ():
 	#==========================================================
 	#---- read motor data file
 	FILNAM = ARGP2
-	IF(FILNAM.EQ.' ') GO TO 28
+	IF( FILNAM == ' ') GO TO 28 
 	#
 	LU = 2
 	OPEN(LU,FILE=FILNAM,STATUS='OLD',ERR=28)
 	#
 	#---- clear motor data in case it's not all in the file
 	for IMPAR in fortranRangeTwoParam( 1, NMPDIM ):
-		PARMOT(IMPAR) = 0.0
-		PMLAB(IMPAR) = ' '
+		PARMOT[IMPAR - 1] = 0.0
+		PMLAB[IMPAR - 1] = ' '
 	#ENDDO
 	#
 	ILINE = 0
@@ -461,16 +461,16 @@ def QPROP ():
 		IF( IERR == +1 ) GO TO 900
 		IF( IERR == -1 ) GO TO 25
 		IF(NVAL< 1) GO TO 980
-		if (IMPAR.EQ.NMPDIM+1):
+		if ( IMPAR == NMPDIM+1): 
 			print  '* Motor parameter array overflow. Increase NMPDIM'
 			raise SystemExit
 		#ENDIF
-		PARMOT(IMPAR) = RVAL[1 - 1]
+		PARMOT[IMPAR - 1] = RVAL[1 - 1]
 		KEX = INDEX(LINE,'#')
 		if (KEX>=1):
-			PMLAB(IMPAR) = LINE[KEX+1:80 - 1]
+			PMLAB[IMPAR - 1] = LINE[KEX+1:80 - 1]
 		else:
-			PMLAB(IMPAR) = ' '
+			PMLAB[IMPAR - 1] = ' '
 		#ENDIF
 	#ENDDO
 	#
@@ -490,7 +490,7 @@ def QPROP ():
 	#==========================================================
 	#---- operating parameter data file, or single-point parameters
 	FILNAM = ARGP3
-	IF(FILNAM.EQ.' ') GO TO 80
+	IF( FILNAM == ' ') GO TO 80 
 	#
 	#---- first assume that 3rd Unix argument is parameter data filename
 	LU = 4
@@ -704,87 +704,87 @@ def QPROP ():
 	N = IDIM
 	for I in fortranRangeTwoParam( 1, N ):
 		FRAC = (FLOAT(I)-0.5)/FLOAT(N)
-		R(I) = R0*(1.0-FRAC) + R1*FRAC
-		DR(I) = (R1-R0)/FLOAT(N)
+		R[I - 1] = R0*(1.0-FRAC) + R1*FRAC
+		DR[I - 1] = (R1-R0)/FLOAT(N)
 	#ENDDO
 	#
 	SPLINE (CB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		C(I) = SEVAL(R(I),CB,WORK,RB,NR)
+		C[I - 1] = SEVAL(R[I - 1],CB,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (BB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		B(I) = SEVAL(R(I),BB,WORK,RB,NR)
+		B[I - 1] = SEVAL(R[I - 1],BB,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (CL0B,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		CL0(I) = SEVAL(R(I),CL0B,WORK,RB,NR)
+		CL0[I - 1] = SEVAL(R[I - 1],CL0B,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (DCLDAB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		DCLDA(I) = SEVAL(R(I),DCLDAB,WORK,RB,NR)
+		DCLDA[I - 1] = SEVAL(R[I - 1],DCLDAB,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (CLMINB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		CLMIN(I) = SEVAL(R(I),CLMINB,WORK,RB,NR)
+		CLMIN[I - 1] = SEVAL(R[I - 1],CLMINB,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (CLMAXB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		CLMAX(I) = SEVAL(R(I),CLMAXB,WORK,RB,NR)
+		CLMAX[I - 1] = SEVAL(R[I - 1],CLMAXB,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (CD0B,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		CD0(I) = SEVAL(R(I),CD0B,WORK,RB,NR)
+		CD0[I - 1] = SEVAL(R[I - 1],CD0B,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (CD2UB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		CD2U(I) = SEVAL(R(I),CD2UB,WORK,RB,NR)
+		CD2U[I - 1] = SEVAL(R[I - 1],CD2UB,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (CD2LB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		CD2L(I) = SEVAL(R(I),CD2LB,WORK,RB,NR)
+		CD2L[I - 1] = SEVAL(R[I - 1],CD2LB,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (CLCD0B,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		CLCD0(I) = SEVAL(R(I),CLCD0B,WORK,RB,NR)
+		CLCD0[I - 1] = SEVAL(R[I - 1],CLCD0B,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (REREFB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		REREF(I) = SEVAL(R(I),REREFB,WORK,RB,NR)
+		REREF[I - 1] = SEVAL(R[I - 1],REREFB,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (REEXPB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		REEXP(I) = SEVAL(R(I),REEXPB,WORK,RB,NR)
+		REEXP[I - 1] = SEVAL(R[I - 1],REEXPB,WORK,RB,NR)
 	#ENDDO
 	#
 	SPLINE (MCRITB,WORK,RB,NR)
 	for I in fortranRangeTwoParam( 1, N ):
-		MCRIT(I) = SEVAL(R(I),MCRITB,WORK,RB,NR)
+		MCRIT[I - 1] = SEVAL(R[I - 1],MCRITB,WORK,RB,NR)
 	#ENDDO
 	#
 	#---- reality checks
 	ERROR = False
 	for I in fortranRangeTwoParam( 1, N ):
-		if (C(I) <= 0.0):
+		if (C[I - 1] <= 0.0):
 			print  'Negative chord at i =', I
 			ERROR = True
 		#ENDIF
-		if (REREF(I) <= 0.0):
+		if (REREF[I - 1] <= 0.0):
 			print  'Negative Re_ref at i =', I
 			ERROR = True
 		#ENDIF
-		if (MCRIT(I) <= 0.0):
+		if (MCRIT[I - 1] <= 0.0):
 			print  'Negative Mcrit at i =', I
 			ERROR = True
 		#ENDIF
@@ -941,7 +941,7 @@ def QPROP ():
 					#----------- guess using 80% radius effective pitch angle
 					I = MAX( 1 , (8*N)/10 )
 					RT = R[I - 1]
-					BT = B[I - 1] - CL0[I - 1]/DCLDA(I) + DBE
+					BT = B[I - 1] - CL0[I - 1]/DCLDA[I - 1] + DBE
 					BT = MAX( 0.02 , MIN( 0.45*PI , BT ) )
 					if ( isClose(VEL, 0.0) ):
 						OMG = 1.0
@@ -953,7 +953,7 @@ def QPROP ():
 					#----------- guess using 80% radius effective pitch angle
 					I = MAX( 1 , (8*N)/10 )
 					RT = R[I - 1]
-					BT = B[I - 1] - CL0[I - 1]/DCLDA(I) + DBE
+					BT = B[I - 1] - CL0[I - 1]/DCLDA[I - 1] + DBE
 					BT = MAX( 0.02 , MIN( 0.45*PI , BT ) )
 					if ( isClose(VEL, 0.0) ):
 						OMG = 1.0
@@ -1148,11 +1148,11 @@ def QPROP ():
 				CDAVG = 0.
 				for I in fortranRangeTwoParam( 1, N ):
 					WA = VEL + VA[I - 1]
-					WT = OMG*R(I) - VT[I - 1]
+					WT = OMG*R[I - 1] - VT[I - 1]
 					WSQ = WA**2 + WT**2
-					DTSUM = DTSUM + WSQ*C(I)*DR(I)
-					CLAVG = CLAVG + WSQ*C(I)*DR(I)*CL(I)
-					CDAVG = CDAVG + WSQ*C(I)*DR(I)*CD(I)
+					DTSUM = DTSUM + WSQ*C[I - 1]*DR[I - 1]
+					CLAVG = CLAVG + WSQ*C[I - 1]*DR[I - 1]*CL[I - 1]
+					CDAVG = CDAVG + WSQ*C[I - 1]*DR[I - 1]*CD[I - 1]
 				#ENDDO
 				CLAVG = CLAVG / DTSUM
 				CDAVG = CDAVG / DTSUM
@@ -1216,19 +1216,19 @@ def QPROP ():
 		#                              123456789012123456789012123456789012
 		for I in fortranRangeTwoParam( 1, N ):
 			WA = VEL + VA[I - 1]
-			WT = OMG*R(I) - VT[I - 1]
+			WT = OMG*R[I - 1] - VT[I - 1]
 			WSQ = WA**2 + WT**2
 			W = SQRT(WSQ)
 			#
 			#------- local Mach and Re
 			AMA = W/VSO
-			IRE = INT( RHO*W*C(I)/RMU + 0.5 )
+			IRE = INT( RHO*W*C[I - 1]/RMU + 0.5 )
 			#
 			#------- local wake advance ratio, induced and profile efficiencies
 			if ( not isClose(WA, 0.0)  and  not isClose(WT, 0.0) ):
-				ADW = (WA/WT) * (R(I)/RAD)
-				EFFI = (VEL/(OMG*R(I))) * (WT/WA)
-				EFFP = (CL(I) - CD[I - 1]*WA/WT)/ (CL(I) + CD[I - 1]*WT/WA)
+				ADW = (WA/WT) * (R[I - 1]/RAD)
+				EFFI = (VEL/(OMG*R[I - 1])) * (WT/WA)
+				EFFP = (CL[I - 1] - CD[I - 1]*WA/WT)/ (CL[I - 1] + CD[I - 1]*WT/WA)
 				# part of multi line command.
 			else:
 				ADW = 0.

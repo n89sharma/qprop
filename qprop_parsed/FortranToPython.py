@@ -113,7 +113,7 @@ def replaceCommands(tempFilePath, formattedFilePath):
         for line in rf:
             pline = line
             pline = pline.replace('!', '#')
-            pline = re.sub(r'^(?P<tab>\t*)[Cc]+(?P<commentValue>(?![a-zA-Z0-9\(]).*)$',                                         '\g<tab>#\g<commentValue>',                                                             pline)
+            pline = re.sub(r'^(?P<tab>\t*)[Cc]+(?P<commentValue>(?![a-zA-Z0-9\(\[]).*)$',                                         '\g<tab>#\g<commentValue>',                                                             pline)
             pline = re.sub(r'^(?P<tab>\t*)PROGRAM\s+(?P<programName>\w+).*$',                                                   '\g<tab>def \g<programName> ():',                                                       pline)
             pline = re.sub(r'^(?P<tab>\t*)SUBROUTINE\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                '\g<tab>def \g<routineName> (\g<routineParameters>):',                                  pline)
             pline = re.sub(r'^(?P<tab>\t*)FUNCTION\s+(?P<routineName>\w+)\s*\((?P<routineParameters>.*)\).*$',                  '\g<tab>def \g<routineName> (\g<routineParameters>):',                                  pline)
@@ -128,6 +128,7 @@ def replaceCommands(tempFilePath, formattedFilePath):
             pline = re.sub(r'^(?P<tab>\t*)ENDDO.*$',                                                                            '\g<tab>#ENDDO',                                                                        pline)
             pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>\-*\d+\.\d+)\s*',                            ' isClose(\g<variableName>, \g<variableValue>) ',                                       pline)
             pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>[\-\+\d]+(?!\.))\s*',                        ' \g<variableName> == \g<variableValue> ',                                              pline)
+            pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.EQ\.\s*(?P<variableValue>.*)',                                        ' \g<variableName> == \g<variableValue> ',                                              pline)
             pline = re.sub(r'\s*(?P<variableName>\w+)\s*\.NE\.\s*(?P<variableValue>[\-\+\d]+\.\d+)\s*',                         ' not isClose(\g<variableName>, \g<variableValue>) ',                                   pline)
 
             pline = re.sub(r'\.FALSE\.',    'False',    pline)
@@ -150,7 +151,8 @@ def replaceCommands(tempFilePath, formattedFilePath):
             pline = re.sub(r'^(?P<tab>\t*)END',         '\g<tab>#END',              pline)
 
             pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>.*)\)\s*STOP\s*(?P<exitStatement>\'.*\')[^\S\n]*$',  '\g<tab>if (\g<logicalComparison>): raise SystemExit(\g<exitStatement>)',   pline)
-            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>.*)\)\s*(?P<assignmentStatement>((?!STOP).*=.*))$',  '\g<tab>if (\g<logicalComparison>): \g<assignmentStatement>',   pline)
+            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>.*)\)\s*STOP[^\S\n]*$',                              '\g<tab>if (\g<logicalComparison>): raise SystemExit',                      pline)
+            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>.*)\)\s*(?P<assignmentStatement>((?!STOP).*=.*))$',  '\g<tab>if (\g<logicalComparison>): \g<assignmentStatement>',               pline)
 
             pythonLines.append(pline)
 
@@ -197,14 +199,13 @@ def fortranRangeTwoParam(fromNum, toNum):
 
 def replaceVariableParenthesis(variableNames, sourceFile, tempFile):
     # variableNames = getVariableListForFile(mainSourceFile)
-    varRegExStrings = [ (var, var + r'\((?P<index>((?!\)).)*)\)') for var in variableNames]
-
+    varRegExStrings = [ (var, r'\b' + var + r'\((?P<index>((?!\)).)*)\)') for var in variableNames]
+    print varRegExStrings
     with open(sourceFile, 'r') as fr:
         sourceData = fr.read()
 
     formattedData = sourceData
     for var, varRegExString in varRegExStrings:
-        print varRegExString
         formattedData = re.sub(varRegExString, var + '[\g<index> - 1]', formattedData)
 
     with open(tempFile, 'w') as fw:
@@ -320,7 +321,7 @@ def replaceVariableDeclerations(sourceFile, tempFile):
         for line in formattedLines:
             fw.write(line)
 
-    return fileVariableList
+    return [var.strip() for var in fileVariableList]
 
 def replaceFormatLines(sourceFile, tempFile):
     formattingLines = {}

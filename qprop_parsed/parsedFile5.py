@@ -150,56 +150,56 @@ PROGRAM QPROP
 	C---- linear CL[alpha - 1] function
 	C     CL  =  CL0 + DCLCD*alpha  ,  clipped if outside range  CLMIN..CLMAX
 	DO IR = 1, NR
-		CL0B(IR) = 0.5
-		DCLDAB(IR) = 5.8
-		CLMINB(IR) = -0.4
-		CLMAXB(IR) = 1.2
+		CL0B[IR - 1] = 0.5
+		DCLDAB[IR - 1] = 5.8
+		CLMINB[IR - 1] = -0.4
+		CLMAXB[IR - 1] = 1.2
 	ENDDO
 	C
 	C---- quadratic CD[CL,Re - 1] function
 	C     CD  =  [ CD0 + CD2*(CL-CLCD0)**2 ] * [Re/REREF]^REEXP
 	DO IR = 1, NR
-		CD0B(IR) = 0.028
-		CD2UB(IR) = 0.050
-		CD2LB(IR) = 0.050
-		CLCD0B(IR) = 0.5
-		REREFB(IR) = 70000.0
-		REEXPB(IR) = -0.7
-		MCRITB(IR) = MCRIT0
+		CD0B[IR - 1] = 0.028
+		CD2UB[IR - 1] = 0.050
+		CD2LB[IR - 1] = 0.050
+		CLCD0B[IR - 1] = 0.5
+		REREFB[IR - 1] = 70000.0
+		REEXPB[IR - 1] = -0.7
+		MCRITB[IR - 1] = MCRIT0
 	ENDDO
 	C
 	C---- radii
 	RFAC = 0.0254
 	RADD = 0.
-	RB(1) = 0.75
-	RB(2) = 1.00
-	RB(3) = 1.50
-	RB(4) = 2.00
-	RB(5) = 2.50
-	RB(6) = 2.875
-	RB(7) = 3.00
+	RB[1 - 1] = 0.75
+	RB[2 - 1] = 1.00
+	RB[3 - 1] = 1.50
+	RB[4 - 1] = 2.00
+	RB[5 - 1] = 2.50
+	RB[6 - 1] = 2.875
+	RB[7 - 1] = 3.00
 	C
 	C---- chords
 	CFAC = 0.0254
 	CADD = 0.
-	CB(1) = 0.66
-	CB(2) = 0.69
-	CB(3) = 0.63
-	CB(4) = 0.55
-	CB(5) = 0.44
-	CB(6) = 0.30
-	CB(7) = 0.19
+	CB[1 - 1] = 0.66
+	CB[2 - 1] = 0.69
+	CB[3 - 1] = 0.63
+	CB[4 - 1] = 0.55
+	CB[5 - 1] = 0.44
+	CB[6 - 1] = 0.30
+	CB[7 - 1] = 0.19
 	C
 	C---- blade angles
 	BFAC = 1.0
 	BADD = 0.
-	BB(1) = 27.5
-	BB(2) = 22.0
-	BB(3) = 15.2
-	BB(4) = 10.2
-	BB(5) =  6.5
-	BB(6) =  4.6
-	BB(7) =  4.2
+	BB[1 - 1] = 27.5
+	BB[2 - 1] = 22.0
+	BB[3 - 1] = 15.2
+	BB[4 - 1] = 10.2
+	BB[5 - 1] =  6.5
+	BB[6 - 1] =  4.6
+	BB[7 - 1] =  4.2
 	C
 	RAD = RB[NR - 1]
 	C
@@ -207,12 +207,12 @@ PROGRAM QPROP
 	C---- default motor/gear combo
 	MNAME = "Speed-400 3321 (6V) direct drive"
 	IMOTYPE = 1
-	PARMOT(1) = 0.31    ! Rmotor  (Ohms)
-	PARMOT(2) = 0.77    ! Io      (Amps)
-	PARMOT(3) = 2760.0  ! Kv      (rpm/Volt)
-	PMLAB(1) = 'R  (Ohm)'
-	PMLAB(2) = 'Io (Amp)'
-	PMLAB(3) = 'Kv (rpm/Volt)'
+	PARMOT[1 - 1] = 0.31    ! Rmotor  (Ohms)
+	PARMOT[2 - 1] = 0.77    ! Io      (Amps)
+	PARMOT[3 - 1] = 2760.0  ! Kv      (rpm/Volt)
+	PMLAB[1 - 1] = 'R  (Ohm)'
+	PMLAB[2 - 1] = 'Io (Amp)'
+	PMLAB[3 - 1] = 'Kv (rpm/Volt)'
 	NMPAR = 3
 	C
 	C----------------------------------------------------
@@ -285,8 +285,8 @@ PROGRAM QPROP
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 2) GO TO 980
 	DO IR = 1, IRDIM
-		CL0B(IR)   = RVAL[1 - 1]
-		DCLDAB(IR) = RVAL[2 - 1]
+		CL0B[IR - 1]   = RVAL[1 - 1]
+		DCLDAB[IR - 1] = RVAL[2 - 1]
 	ENDDO
 	C
 	NVAL = 2
@@ -295,8 +295,8 @@ PROGRAM QPROP
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 2) GO TO 980
 	DO IR = 1, IRDIM
-		CLMINB(IR) = RVAL[1 - 1]
-		CLMAXB(IR) = RVAL[2 - 1]
+		CLMINB[IR - 1] = RVAL[1 - 1]
+		CLMAXB[IR - 1] = RVAL[2 - 1]
 	ENDDO
 	C
 	NVAL = 4
@@ -305,10 +305,10 @@ PROGRAM QPROP
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 3) GO TO 980
 	DO IR = 1, IRDIM
-		CD0B(IR)   = RVAL[1 - 1]
-		CD2UB(IR)  = RVAL[2 - 1]
-		CD2LB(IR)  = RVAL[3 - 1]
-		CLCD0B(IR) = RVAL[4 - 1]
+		CD0B[IR - 1]   = RVAL[1 - 1]
+		CD2UB[IR - 1]  = RVAL[2 - 1]
+		CD2LB[IR - 1]  = RVAL[3 - 1]
+		CLCD0B[IR - 1] = RVAL[4 - 1]
 	ENDDO
 	C
 	NVAL = 2
@@ -317,8 +317,8 @@ PROGRAM QPROP
 	IF(IERR.EQ.-1) GO TO 950
 	IF(NVAL.LT. 2) GO TO 980
 	DO IR = 1, IRDIM
-		REREFB(IR) = RVAL[1 - 1]
-		REEXPB(IR) = RVAL[2 - 1]
+		REREFB[IR - 1] = RVAL[1 - 1]
+		REEXPB[IR - 1] = RVAL[2 - 1]
 	ENDDO
 	C
 	C
@@ -352,11 +352,11 @@ PROGRAM QPROP
 	C
 	KR = KR + 1
 	IR = MIN( KR , IRDIM )
-	RB(IR) = RVAL[1 - 1]
-	CB(IR) = RVAL[2 - 1]
-	BB(IR) = RVAL[3 - 1]
+	RB[IR - 1] = RVAL[1 - 1]
+	CB[IR - 1] = RVAL[2 - 1]
+	BB[IR - 1] = RVAL[3 - 1]
 	C
-	MCRITB(IR) = MCRIT0
+	MCRITB[IR - 1] = MCRIT0
 	C
 	IF(NVAL.GE. 4) CL0B[IR - 1]   = RVAL[ 4 - 1]
 	IF(NVAL.GE. 5) DCLDAB[IR - 1] = RVAL[ 5 - 1]
@@ -399,9 +399,9 @@ PROGRAM QPROP
 	C
 	C---- apply scaling factors
 	DO IR = 1, NR
-		RB(IR) =  RB[IR - 1]*RFAC + RADD
-		CB(IR) =  CB[IR - 1]*CFAC + CADD
-		BB(IR) = (BB(IR)*BFAC + BADD)* PI / 180.0
+		RB[IR - 1] =  RB[IR - 1]*RFAC + RADD
+		CB[IR - 1] =  CB[IR - 1]*CFAC + CADD
+		BB[IR - 1] = (BB[IR - 1]*BFAC + BADD)* PI / 180.0
 	ENDDO
 	C
 	IF(RAD .EQ. 0.0) THEN
@@ -409,11 +409,11 @@ PROGRAM QPROP
 	ENDIF
 	C
 	DO IR = 1, NR-1
-		IF(CB(IR) .LE. 0.0)STOP 'Chords must be positive'
+		IF(CB[IR - 1] .LE. 0.0)STOP 'Chords must be positive'
 		# part of multi line command.
-		IF(RB(IR) .LT. 0.0)STOP 'Radii must be nonnegative'
+		IF(RB[IR - 1] .LT. 0.0)STOP 'Radii must be nonnegative'
 		# part of multi line command.
-		IF(RB(IR) .GE. RB[IR+1 - 1])STOP 'Radii must increase monotonically'
+		IF(RB[IR - 1] .GE. RB[IR+1 - 1])STOP 'Radii must increase monotonically'
 		# part of multi line command.
 	ENDDO
 	C
@@ -435,8 +435,8 @@ PROGRAM QPROP
 	C
 	C---- clear motor data in case it's not all in the file
 	DO IMPAR = 1, NMPDIM
-		PARMOT(IMPAR) = 0.0
-		PMLAB(IMPAR) = ' '
+		PARMOT[IMPAR - 1] = 0.0
+		PMLAB[IMPAR - 1] = ' '
 	ENDDO
 	C
 	ILINE = 0
@@ -465,12 +465,12 @@ PROGRAM QPROP
 			WRITE(*,*) '* Motor parameter array overflow. Increase NMPDIM'
 			STOP
 		ENDIF
-		PARMOT(IMPAR) = RVAL[1 - 1]
+		PARMOT[IMPAR - 1] = RVAL[1 - 1]
 		KEX = INDEX(LINE,'!')
 		IF(KEX.GE.1) THEN
-			PMLAB(IMPAR) = LINE[KEX+1:80 - 1]
+			PMLAB[IMPAR - 1] = LINE[KEX+1:80 - 1]
 		ELSE
-			PMLAB(IMPAR) = ' '
+			PMLAB[IMPAR - 1] = ' '
 		ENDIF
 	ENDDO
 	C
@@ -704,87 +704,87 @@ PROGRAM QPROP
 	N = IDIM
 	DO I = 1, N
 		FRAC = (FLOAT(I)-0.5)/FLOAT(N)
-		R(I) = R0*(1.0-FRAC) + R1*FRAC
-		DR(I) = (R1-R0)/FLOAT(N)
+		R[I - 1] = R0*(1.0-FRAC) + R1*FRAC
+		DR[I - 1] = (R1-R0)/FLOAT(N)
 	ENDDO
 	C
 	CALL SPLINE(CB,WORK,RB,NR)
 	DO I = 1, N
-		C(I) = SEVAL(R(I),CB,WORK,RB,NR)
+		C[I - 1] = SEVAL(R[I - 1],CB,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(BB,WORK,RB,NR)
 	DO I = 1, N
-		B(I) = SEVAL(R(I),BB,WORK,RB,NR)
+		B[I - 1] = SEVAL(R[I - 1],BB,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(CL0B,WORK,RB,NR)
 	DO I = 1, N
-		CL0(I) = SEVAL(R(I),CL0B,WORK,RB,NR)
+		CL0[I - 1] = SEVAL(R[I - 1],CL0B,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(DCLDAB,WORK,RB,NR)
 	DO I = 1, N
-		DCLDA(I) = SEVAL(R(I),DCLDAB,WORK,RB,NR)
+		DCLDA[I - 1] = SEVAL(R[I - 1],DCLDAB,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(CLMINB,WORK,RB,NR)
 	DO I = 1, N
-		CLMIN(I) = SEVAL(R(I),CLMINB,WORK,RB,NR)
+		CLMIN[I - 1] = SEVAL(R[I - 1],CLMINB,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(CLMAXB,WORK,RB,NR)
 	DO I = 1, N
-		CLMAX(I) = SEVAL(R(I),CLMAXB,WORK,RB,NR)
+		CLMAX[I - 1] = SEVAL(R[I - 1],CLMAXB,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(CD0B,WORK,RB,NR)
 	DO I = 1, N
-		CD0(I) = SEVAL(R(I),CD0B,WORK,RB,NR)
+		CD0[I - 1] = SEVAL(R[I - 1],CD0B,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(CD2UB,WORK,RB,NR)
 	DO I = 1, N
-		CD2U(I) = SEVAL(R(I),CD2UB,WORK,RB,NR)
+		CD2U[I - 1] = SEVAL(R[I - 1],CD2UB,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(CD2LB,WORK,RB,NR)
 	DO I = 1, N
-		CD2L(I) = SEVAL(R(I),CD2LB,WORK,RB,NR)
+		CD2L[I - 1] = SEVAL(R[I - 1],CD2LB,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(CLCD0B,WORK,RB,NR)
 	DO I = 1, N
-		CLCD0(I) = SEVAL(R(I),CLCD0B,WORK,RB,NR)
+		CLCD0[I - 1] = SEVAL(R[I - 1],CLCD0B,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(REREFB,WORK,RB,NR)
 	DO I = 1, N
-		REREF(I) = SEVAL(R(I),REREFB,WORK,RB,NR)
+		REREF[I - 1] = SEVAL(R[I - 1],REREFB,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(REEXPB,WORK,RB,NR)
 	DO I = 1, N
-		REEXP(I) = SEVAL(R(I),REEXPB,WORK,RB,NR)
+		REEXP[I - 1] = SEVAL(R[I - 1],REEXPB,WORK,RB,NR)
 	ENDDO
 	C
 	CALL SPLINE(MCRITB,WORK,RB,NR)
 	DO I = 1, N
-		MCRIT(I) = SEVAL(R(I),MCRITB,WORK,RB,NR)
+		MCRIT[I - 1] = SEVAL(R[I - 1],MCRITB,WORK,RB,NR)
 	ENDDO
 	C
 	C---- reality checks
 	ERROR = .FALSE.
 	DO I = 1, N
-		IF(C(I) .LE. 0.0) THEN
+		IF(C[I - 1] .LE. 0.0) THEN
 			WRITE(*,*) 'Negative chord at i =', I
 			ERROR = .TRUE.
 		ENDIF
-		IF(REREF(I) .LE. 0.0) THEN
+		IF(REREF[I - 1] .LE. 0.0) THEN
 			WRITE(*,*) 'Negative Re_ref at i =', I
 			ERROR = .TRUE.
 		ENDIF
-		IF(MCRIT(I) .LE. 0.0) THEN
+		IF(MCRIT[I - 1] .LE. 0.0) THEN
 			WRITE(*,*) 'Negative Mcrit at i =', I
 			ERROR = .TRUE.
 		ENDIF
@@ -941,7 +941,7 @@ PROGRAM QPROP
 					C----------- guess using 80% radius effective pitch angle
 					I = MAX( 1 , (8*N)/10 )
 					RT = R[I - 1]
-					BT = B[I - 1] - CL0[I - 1]/DCLDA(I) + DBE
+					BT = B[I - 1] - CL0[I - 1]/DCLDA[I - 1] + DBE
 					BT = MAX( 0.02 , MIN( 0.45*PI , BT ) )
 					IF(VEL.EQ.0.0) THEN
 						OMG = 1.0
@@ -953,7 +953,7 @@ PROGRAM QPROP
 					C----------- guess using 80% radius effective pitch angle
 					I = MAX( 1 , (8*N)/10 )
 					RT = R[I - 1]
-					BT = B[I - 1] - CL0[I - 1]/DCLDA(I) + DBE
+					BT = B[I - 1] - CL0[I - 1]/DCLDA[I - 1] + DBE
 					BT = MAX( 0.02 , MIN( 0.45*PI , BT ) )
 					IF(VEL.EQ.0.0) THEN
 						OMG = 1.0
@@ -1148,11 +1148,11 @@ PROGRAM QPROP
 				CDAVG = 0.
 				DO I = 1, N
 					WA = VEL + VA[I - 1]
-					WT = OMG*R(I) - VT[I - 1]
+					WT = OMG*R[I - 1] - VT[I - 1]
 					WSQ = WA**2 + WT**2
-					DTSUM = DTSUM + WSQ*C(I)*DR(I)
-					CLAVG = CLAVG + WSQ*C(I)*DR(I)*CL(I)
-					CDAVG = CDAVG + WSQ*C(I)*DR(I)*CD(I)
+					DTSUM = DTSUM + WSQ*C[I - 1]*DR[I - 1]
+					CLAVG = CLAVG + WSQ*C[I - 1]*DR[I - 1]*CL[I - 1]
+					CDAVG = CDAVG + WSQ*C[I - 1]*DR[I - 1]*CD[I - 1]
 				ENDDO
 				CLAVG = CLAVG / DTSUM
 				CDAVG = CDAVG / DTSUM
@@ -1216,19 +1216,19 @@ PROGRAM QPROP
 		C                              123456789012123456789012123456789012
 		DO I = 1, N
 			WA = VEL + VA[I - 1]
-			WT = OMG*R(I) - VT[I - 1]
+			WT = OMG*R[I - 1] - VT[I - 1]
 			WSQ = WA**2 + WT**2
 			W = SQRT(WSQ)
 			C
 			C------- local Mach and Re
 			AMA = W/VSO
-			IRE = INT( RHO*W*C(I)/RMU + 0.5 )
+			IRE = INT( RHO*W*C[I - 1]/RMU + 0.5 )
 			C
 			C------- local wake advance ratio, induced and profile efficiencies
 			IF(WA.NE.0.0 .AND. WT.NE.0.0) THEN
-				ADW = (WA/WT) * (R(I)/RAD)
-				EFFI = (VEL/(OMG*R(I))) * (WT/WA)
-				EFFP = (CL(I) - CD[I - 1]*WA/WT)/ (CL(I) + CD[I - 1]*WT/WA)
+				ADW = (WA/WT) * (R[I - 1]/RAD)
+				EFFI = (VEL/(OMG*R[I - 1])) * (WT/WA)
+				EFFP = (CL[I - 1] - CD[I - 1]*WA/WT)/ (CL[I - 1] + CD[I - 1]*WT/WA)
 				# part of multi line command.
 			ELSE
 				ADW = 0.
