@@ -1,11 +1,7 @@
-write statements
-format statements
+single line if statement error
+open statements
 read statements
-
 multiple subroutines get polluted with each others variables
 3D arrays
-
 go to statements
-open statements
-
 for loop range should be set from 1, to max+1

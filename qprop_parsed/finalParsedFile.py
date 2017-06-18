@@ -409,11 +409,11 @@ def QPROP ():
 	#ENDIF
 	#
 	for IR in fortranRangeTwoParam( 1, NR ):
-		if (CB(IR): <= 0.0)STOP 'Chords must be positive'
+		if (CB(IR) <= 0.0): raise SystemExit('Chords must be positive')
 		# part of multi line command.
-		IF(RB(IR) < 0.0)STOP 'Radii must be nonnegative'
+		if (RB(IR) < 0.0): raise SystemExit('Radii must be nonnegative')
 		# part of multi line command.
-		if (RB(IR): >= RB[IR+1 - 1])STOP 'Radii must increase monotonically'
+		if (RB(IR) >= RB[IR+1 - 1]): raise SystemExit('Radii must increase monotonically')
 		# part of multi line command.
 	#ENDDO
 	#

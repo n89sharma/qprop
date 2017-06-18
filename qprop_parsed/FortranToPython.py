@@ -57,7 +57,6 @@ def collapseMultiLines(sourceFilePath, tempFilePath):
             if(isPartOfMultiLineComman):
                 fileData.append('# part of multi line command.\n')
                 fileData[mainCommandLine] = fileData[mainCommandLine].strip() + lineContent + '\n'
-                # print  fileData[mainCommandLine]
             else:
                 fileData.append(lineContent + '\n')
                 mainCommandLine = lineNumber
@@ -95,9 +94,6 @@ def addTabs(tempFilePath, formattedFilePath):
                     lineLabelContinue in doLoopLineLabels)):
                 mainList[currLevel - 1].append((lineNumber, lineContent))
                 currLevel -= 1
-                # if currLevel < 0:
-                    # currLevel = 0
-
             else:
                 mainList[currLevel].append((lineNumber, lineContent))
 
@@ -153,11 +149,8 @@ def replaceCommands(tempFilePath, formattedFilePath):
             pline = re.sub(r'^(?P<tab>\t*)RETURN',      '\g<tab>return',            pline)
             pline = re.sub(r'^(?P<tab>\t*)END',         '\g<tab>#END',              pline)
 
-            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>((?!\)).)*)\)\s*STOP\s*(?P<exitStatement>\'.*\')[^\S\n]*$',  '\g<tab>if (\g<logicalComparison>): raise SystemExit(\g<exitStatement>)',   pline)
-            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>((?!\)).)*)\)\s*(?P<assignmentStatement>((?!STOP).*=.*))$',  '\g<tab>if (\g<logicalComparison>): \g<assignmentStatement>',   pline)
-            # pline = re.sub(r'^\t*REAL', '#REAL', pline)
-            # pline = re.sub(r'WRITE\(\*,\*\)', 'print', pline)
-            # pline = re.sub(r'^WRITE\(\*,\*\)$', 'print \'\'', pline)
+            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>.*)\)\s*STOP\s*(?P<exitStatement>\'.*\')[^\S\n]*$',  '\g<tab>if (\g<logicalComparison>): raise SystemExit(\g<exitStatement>)',   pline)
+            pline = re.sub(r'^(?P<tab>\t*)IF\s*\((?P<logicalComparison>.*)\)\s*(?P<assignmentStatement>((?!STOP).*=.*))$',  '\g<tab>if (\g<logicalComparison>): \g<assignmentStatement>',   pline)
 
             pythonLines.append(pline)
 
@@ -211,6 +204,7 @@ def replaceVariableParenthesis(variableNames, sourceFile, tempFile):
 
     formattedData = sourceData
     for var, varRegExString in varRegExStrings:
+        print varRegExString
         formattedData = re.sub(varRegExString, var + '[\g<index> - 1]', formattedData)
 
     with open(tempFile, 'w') as fw:
@@ -360,7 +354,6 @@ def replaceFormatLines(sourceFile, tempFile):
                 pythonFormatting            = pythonFormatting.replace('\'', '')
                 pythonFormatting            = '\'' + pythonFormatting + '\'\n'
                 formattingLines[lineLabel]  = pythonFormatting
-                print pythonFormatting
                 fileLines[lineNumber]       = '# ' + line
 
             elif writeMatch:
