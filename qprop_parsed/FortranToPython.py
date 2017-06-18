@@ -200,13 +200,12 @@ def fortranRangeTwoParam(fromNum, toNum):
 def replaceVariableParenthesis(variableNames, sourceFile, tempFile):
     # variableNames = getVariableListForFile(mainSourceFile)
     varRegExStrings = [ (var, r'\b' + var + r'\((?P<index>((?!\)).)*)\)') for var in variableNames]
-    print varRegExStrings
     with open(sourceFile, 'r') as fr:
         sourceData = fr.read()
 
     formattedData = sourceData
     for var, varRegExString in varRegExStrings:
-        formattedData = re.sub(varRegExString, var + '[\g<index> - 1]', formattedData)
+        formattedData = re.sub(varRegExString, var + '[\g<index>]', formattedData)
 
     with open(tempFile, 'w') as fw:
         fw.write(formattedData)
@@ -258,8 +257,15 @@ def replaceVariableDeclerations(sourceFile, tempFile):
 
             if data != None:
                 initialValue = initialValueForVarType(real, dimension, logical, character, integer)
-                isMultiVariableLine = len(re.findall(',', data)) > 0
 
+                params = re.findall(r'\([^\)]*\)', data)
+                replaceParams = []
+                for param in params:
+                    replaceParams.append((param, param.replace(',', ':')))
+                for param, replaceParam in replaceParams:
+                    data = data.replace(param, replaceParam)
+
+                isMultiVariableLine = len(re.findall(',', data)) > 0
                 if isMultiVariableLine:
                     varList = []
                     varArrayList = []
@@ -283,8 +289,16 @@ def replaceVariableDeclerations(sourceFile, tempFile):
                             formattedLine += varName + ','
                         formattedLine += varArrayList[-1] + ' = '
                         for arrayLength in varArrayLengthList[:-1]:
-                            formattedLine += '[' + str(initialValue) + ']*' + arrayLength + ' ,'
-                        formattedLine += '[' + str(initialValue) + ']*' + varArrayLengthList[-1] + '\n'
+                            if(':' in arrayLength):
+                                indexes = arrayLength.split(':')
+                                formattedLine += 'np.zeros({},{},{}),'.format(indexes[0], indexes[1], indexes[2])
+                            else:
+                                formattedLine += '[' + str(initialValue) + ']*' + arrayLength + ' ,'
+                        if(':' in varArrayLengthList[-1]):
+                            indexes = varArrayLengthList[-1].split(':')
+                            formattedLine += 'np.zeros({},{},{})\n'.format(indexes[0], indexes[1], indexes[2])
+                        else:
+                            formattedLine += '[' + str(initialValue) + ']*' + varArrayLengthList[-1] + '\n'
 
                     # multiple single valued variables declared in one line
                     else:
@@ -320,8 +334,9 @@ def replaceVariableDeclerations(sourceFile, tempFile):
     with open(tempFile, 'w') as fw:
         for line in formattedLines:
             fw.write(line)
-
+    # raise SystemExit
     return [var.strip() for var in fileVariableList]
+
 
 def replaceFormatLines(sourceFile, tempFile):
     formattingLines = {}
@@ -384,14 +399,14 @@ if __name__ == '__main__':
     # sourceFilePath      = 'qprop_source/src/motor.f'
 
 
-    sourceFilePath      = 'qprop_source/src/bnsolv.f'
     sourceFilePath      = 'qprop_python/test.f'
+    sourceFilePath      = 'qprop_source/src/qprop.f'
+    sourceFilePath      = 'qprop_source/src/tqcalc.f'
+    sourceFilePath      = 'qprop_source/src/spline.f'
+    sourceFilePath      = 'qprop_source/src/qmil.f'
+    sourceFilePath      = 'qprop_source/src/bnsolv.f'
     sourceFilePath      = 'qprop_source/src/gvcalc.f'
     sourceFilePath      = 'qprop_source/src/tpdes.f'
-    sourceFilePath      = 'qprop_source/src/qmil.f'
-    sourceFilePath      = 'qprop_source/src/spline.f'
-    sourceFilePath      = 'qprop_source/src/tqcalc.f'
-    sourceFilePath      = 'qprop_source/src/qprop.f'
 
     tempFilePath        = 'qprop_parsed/parsedFile1.f'
     tempFilePath2       = 'qprop_parsed/parsedFile2.py'
