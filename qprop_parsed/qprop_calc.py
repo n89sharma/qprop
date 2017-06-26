@@ -2,12 +2,28 @@ import numpy as np
 import scipy.optimize as opt
 import math
 
-def gammaFunc ( x0, V, omega, c, beta, r, R, B, a, dclda, cl0, clmax, clmin):
+def gammaFunc ( x0, V, omega, c, beta, r, R, B, dclda, cl0, clmax, clmin):
     va, vt = x0[0], x0[1]
-    Wa  = V + va
     Wt  = omega*r - vt
-    W   = math.sqrt(Wa*Wa + Wt*Wt)
+    Wa  = V + va
+    gamma1 = getCirculationAndLiftRelation(Wt, Wa, omega, V, r, va, vt, c, beta, dclda, cl0)
+    gamma2 = getCirculationAndTangentialVelocityRelation(Wt, Wa, omega, V, r, R, B, va, vt)
+    return np.asarray([Wt/Wa - va/vt, gamma1 - gamma2])
+
+def getCirculationAndLiftRelation(Wt, Wa, omega, V, r, va, vt, c, beta, dclda, cl0):
+    W       = math.sqrt(Wa*Wa + Wt*Wt)
     alpha   = beta - math.atan(Wa/Wt)
+    cl      = getLiftCoefficient(W, alpha, dclda, cl0)
+    return 0.5*W*c*cl
+
+def getCirculationAndTangentialVelocityRelation(Wt, Wa, omega, V, r, R, B, va, vt):
+    advanceRatio    = r*Wa/R/Wt
+    f   = 0.5*B*(1 - r/R)/advanceRatio
+    F   = 2*math.acos(math.exp(-f))/math.pi
+    return vt*4.*math.pi*r*F*math.sqrt(1 + math.pow( (4.*advanceRatio*R/math.pi/B/r), 2))/B
+
+def getLiftCoefficient (W, alpha, dclda, cl0):
+    a       = 340.      #m/s
     Ma      = W/a
     Ma      = 0.9 if Ma > .9 else Ma
     cl      = (dclda*alpha + cl0)/math.sqrt(1. - Ma)
@@ -15,22 +31,7 @@ def gammaFunc ( x0, V, omega, c, beta, r, R, B, a, dclda, cl0, clmax, clmin):
         cl  = clmax*math.cos(alpha - cl0/dclda)
     elif cl < clmin:
         cl  = clmin*math.cos(alpha - cl0/dclda)
-    gamma1  = 0.5*W*c*cl
-    advanceRatio    = r*Wa/R/Wt
-    f               = 0.5*B*(1 - r/R)/advanceRatio
-    F               = 2*math.acos(math.exp(-f))/math.pi
-    gamma2          = vt*4.*math.pi*r*F*math.sqrt(1 + math.pow( (4.*advanceRatio*R/math.pi/B/r), 2))/B
-    return np.asarray([Wt/Wa - va/vt, gamma1 - gamma2])
-
-def getGamma(omega, V, r, R, B, va, vt):
-    Wt  = omega*r - vt
-    Wa  = V + va
-    W   = math.sqrt(Wt*Wt + Wa*Wa)
-    advanceRatio    = r*Wa/R/Wt
-    f               = 0.5*B*(1 - r/R)/advanceRatio
-    F               = 2*math.acos(math.exp(-f))/math.pi
-    gamma           = vt*4.*math.pi*r*F*math.sqrt(1 + math.pow( (4.*advanceRatio*R/math.pi/B/r), 2))/B
-    return Wt, Wa, W, gamma, va, vt
+    return cl
 
 def getDragCoefficient(cl, Re, Ma, clcd0, cd0, cd2, ReRef, ReExp, mcrit):
     cdmf = 10.
@@ -48,7 +49,6 @@ def getDragCoefficient(cl, Re, Ma, clcd0, cd0, cd2, ReRef, ReExp, mcrit):
 def getTorque(rho, B, W, c, dr):
     return 0
 # r       = np.linspace(0.75, R, 7)
-a       = 340.      #m/s
 rho     = 1.225     #kg/m^3
 mu      = 1.78E-5   #kg/m/s
 B       = 2
@@ -73,9 +73,6 @@ for _r, _c, _beta in zip(r, c, beta):
     optRes = opt.root(
         gammaFunc,
         [1.,1.],
-        args=(V, omega, _c, _beta, _r, R, B, a, dclda, cl0, clmax, clmin))
+        args=(V, omega, _c, _beta, _r, R, B, dclda, cl0, clmax, clmin))
     res.append(optRes.x)
-
-res = np.asarray([getGamma(omega, V, _r, R, B, va, vt) for (va, vt), _r in zip(res, r)])
-#Wt, Wa, W, gamma, va, vt
-print [res_[-2] for res_ in res]
+    print(optRes.x)
