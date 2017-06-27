@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  gvcalc.f
-C 
-C    Copyright (C) 2003 Mark Drela 
-C 
+C
+C    Copyright (C) 2003 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -30,9 +30,9 @@ C***********************************************************************
 C--------------------------------------------------------------
 C     Computes circulation and related section properties
 C     at one radial station.  Uses local circulation/swirl
-C     relation with a modified Prandtl's tip fudge factor.  
-C     Does not make light-loading approximations, and 
-C     is consistent with actuator disk theory in the limit 
+C     relation with a modified Prandtl's tip fudge factor.
+C     Does not make light-loading approximations, and
+C     is consistent with actuator disk theory in the limit
 C     of zero forward velocity.
 C
 C  Input   CHORD   local blade chord
@@ -64,6 +64,12 @@ C          ()_CH   derivatives  d()/dCHORD
 C          ()_BE   derivatives  d()/dBETA
 C--------------------------------------------------------------
 C
+      LU = 100
+      OPEN(LU,FILE='GVCALC_RESULTS.txt')
+      WRITE(LU, 1001) CHORD, BETA, R, BLDS, RAD, VEL, OMG, VSO,
+     & CL0, DCLDA, CLMIN, CLMAX, MCRIT
+1001  FORMAT(F10.4, F10.4, F10.4, F10.4, F10.4, F10.4, F10.4, F10.4,
+     & F10.4, F10.4, F10.4, F10.4, F10.4)
       DATA PI / 3.14159265 /
       DATA EPS / 1.0E-6 /
 cc      DATA EPS / 1.0E-10 /
@@ -208,11 +214,11 @@ C
 C
 C------ CL(alpha,Mach) function
         CL     = (DCLDA*A + CL0)*PG
-        CL_PSI =  DCLDA*A_PSI   *PG + (DCLDA*A + CL0)*PG_PSI 
-        CL_VEL =  DCLDA*A_VEL   *PG + (DCLDA*A + CL0)*PG_VEL 
-        CL_OMG =  DCLDA*A_OMG   *PG + (DCLDA*A + CL0)*PG_OMG 
-        CL_BE  =  DCLDA*A_BE    *PG   
-C                      
+        CL_PSI =  DCLDA*A_PSI   *PG + (DCLDA*A + CL0)*PG_PSI
+        CL_VEL =  DCLDA*A_VEL   *PG + (DCLDA*A + CL0)*PG_VEL
+        CL_OMG =  DCLDA*A_OMG   *PG + (DCLDA*A + CL0)*PG_OMG
+        CL_BE  =  DCLDA*A_BE    *PG
+C
         STALL = .FALSE.
         IF    (CL.GT.CLMAX) THEN
          STALL = .TRUE.
@@ -306,4 +312,3 @@ C
 C
       RETURN
       END ! GVCALC
-

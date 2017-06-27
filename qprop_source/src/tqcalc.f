@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  tqcalc.f
-C 
-C    Copyright (C) 2003 Mark Drela 
-C 
+C
+C    Copyright (C) 2003 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -101,13 +101,22 @@ C
       QP_OMG = 0.
       QP_DBE = 0.
 C
+      OPEN(101,FILE='TQCALC_RESULTS.txt')
+
+1002  FORMAT(G15.4, F15.4, F15.4, F15.4, F15.4, F15.4,
+     &  F15.4, F15.4, F15.4,
+     &  F15.4, F15.4, E15.4, E15.4)
 C---- go over radial stations
       DO I = 1, N
+        WRITE(101, 1002) I, CL0(I), DCLDA(I), CLMIN(I),
+     &  CLMAX(I), MCRIT(I),
+     &  CD0(I), CD2U(I), CD2L(I), CLCD0(I), REREF(I), REEXP(I)
+C
         BTOT = B(I) + DBE
         CALL GVCALC(C(I),BTOT,R(I),
      &              BLDS,RAD,VEL,OMG,VSO,
      &              CL0(I),DCLDA(I),CLMIN(I),CLMAX(I),MCRIT(I),
-     &        GAM  ,GAM_VEL,GAM_OMG,GAM_C,GAM_B, 
+     &        GAM  ,GAM_VEL,GAM_OMG,GAM_C,GAM_B,
      &        VA(I), VA_VEL, VA_OMG, VA_C, VA_B,
      &        VT(I), VT_VEL, VT_OMG, VT_C, VT_B,
      &        CL(I), CL_VEL, CL_OMG, CL_C, CL_B, STALL(I), LCONV)
@@ -142,7 +151,7 @@ C------ total axial and tangential velocities
         WA     = UA     + VA(I)
         WA_VEL = UA_VEL + VA_VEL
         WA_OMG =          VA_OMG
-        WA_B   =          VA_B  
+        WA_B   =          VA_B
         WA_C   =          VA_C
         WA_U0A = UA_U0A + VA_U0A
         WA_U0T =          VA_U0T
@@ -150,8 +159,8 @@ C
         WT     = UT     - VT(I)
         WT_VEL =        - VT_VEL
         WT_OMG = UT_OMG - VT_OMG
-        WT_B   =        - VT_B  
-        WT_C   =        - VT_C 
+        WT_B   =        - VT_B
+        WT_C   =        - VT_C
         WT_U0A =        - VT_U0A
         WT_U0T = UT_U0T - VT_U0T
 C
@@ -159,8 +168,8 @@ C------ total velocity^2
         WSQ = WA**2 + WT**2
         WSQ_VEL = 2.0*WA*WA_VEL + 2.0*WT*WT_VEL
         WSQ_OMG = 2.0*WA*WA_OMG + 2.0*WT*WT_OMG
-        WSQ_B   = 2.0*WA*WA_B   + 2.0*WT*WT_B  
-        WSQ_C   = 2.0*WA*WA_C   + 2.0*WT*WT_C  
+        WSQ_B   = 2.0*WA*WA_B   + 2.0*WT*WT_B
+        WSQ_C   = 2.0*WA*WA_C   + 2.0*WT*WT_C
         WSQ_U0A = 2.0*WA*WA_U0A + 2.0*WT*WT_U0A
         WSQ_U0T = 2.0*WA*WA_U0T + 2.0*WT*WT_U0T
 C
@@ -215,14 +224,14 @@ C
         MA = MAX( MA , 1.0E-8 )
         MA_VEL = (0.5/MA)*MSQ_VEL
         MA_OMG = (0.5/MA)*MSQ_OMG
-        MA_B   = (0.5/MA)*MSQ_B  
-        MA_C   = (0.5/MA)*MSQ_C  
+        MA_B   = (0.5/MA)*MSQ_B
+        MA_C   = (0.5/MA)*MSQ_C
         MA_U0A = (0.5/MA)*MSQ_U0A
         MA_U0T = (0.5/MA)*MSQ_U0T
 C
 C------ set unstalled CD
         IF(CL(I).GT.CLCD0(I)) THEN
-         CALL CDFUN(CL(I),RE,MA, 
+         CALL CDFUN(CL(I),RE,MA,
      &              CLCD0(I),CD0(I),CD2U(I),REREF,REEXP(I),MCRIT,
      &              CD(I),CD_CL,CD_RE,CD_MA)
         ELSE
@@ -232,8 +241,8 @@ C------ set unstalled CD
         ENDIF
         CD_VEL = CD_CL*CL_VEL + CD_RE*RE_VEL + CD_MA*MA_VEL
         CD_OMG = CD_CL*CL_OMG + CD_RE*RE_OMG + CD_MA*MA_OMG
-        CD_B   = CD_CL*CL_B   + CD_RE*RE_B   + CD_MA*MA_B   
-        CD_C   = CD_CL*CL_C   + CD_RE*RE_C   + CD_MA*MA_C   
+        CD_B   = CD_CL*CL_B   + CD_RE*RE_B   + CD_MA*MA_B
+        CD_C   = CD_CL*CL_C   + CD_RE*RE_C   + CD_MA*MA_C
         CD_U0A = CD_CL*CL_U0A + CD_RE*RE_U0A + CD_MA*MA_U0A
         CD_U0T = CD_CL*CL_U0T + CD_RE*RE_U0T + CD_MA*MA_U0T
 C
@@ -246,7 +255,7 @@ C
          CD_VEL = CD_VEL + DCD_WA*WA_VEL + DCD_WT*WT_VEL
          CD_OMG = CD_OMG + DCD_WA*WA_OMG + DCD_WT*WT_OMG
          CD_B   = CD_B   + DCD_WA*WA_B   + DCD_WT*WT_B   + DCD_B
-         CD_C   = CD_C   + DCD_WA*WA_C   + DCD_WT*WT_C  
+         CD_C   = CD_C   + DCD_WA*WA_C   + DCD_WT*WT_C
          CD_U0A = CD_U0A + DCD_WA*WA_U0A + DCD_WT*WT_U0A
          CD_U0T = CD_U0T + DCD_WA*WA_U0T + DCD_WT*WT_U0T
 C
