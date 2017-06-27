@@ -25,6 +25,7 @@ def getCirculationAndTangentialVelocityRelation(Wt, Wa, omega, V, r, R, B, va, v
 def getLiftCoefficient (W, alpha, dclda, cl0):
     a       = 340.      #m/s
     Ma      = W/a
+    print Ma
     Ma      = 0.9 if Ma > .9 else Ma
     cl      = (dclda*alpha + cl0)/math.sqrt(1. - Ma)
     if cl > clmax:
@@ -33,10 +34,10 @@ def getLiftCoefficient (W, alpha, dclda, cl0):
         cl  = clmin*math.cos(alpha - cl0/dclda)
     return cl
 
-def getDragCoefficient(cl, Re, Ma, clcd0, cd0, cd2, ReRef, ReExp, mcrit):
+def getDragCoefficient(cl, Re, Ma, clcd0, cd0, cd2, reRef, reExp, mcrit):
     cdmf = 10.
     iexp = 3.
-    fac = (Re/ReRef)**ReExp
+    fac = (re/reRef)**reExp
 
     clb = cl - clcd0
     cd = (cd0 + cd2*clb**2)*fac
@@ -59,8 +60,8 @@ rho     = 1.225     #kg/m^3
 mu      = 1.78E-5   #kg/m/s
 B       = 2
 R       = 3         #m
-V       = 20        #m/s 72 km/hr
-omega   = 1500.*math.pi/30. #rad/s
+V       = 0        #m/s 72 km/hr
+omega   = 10000.*math.pi/30. #rad/s
 r       = np.asarray([0.75, 1., 1.5, 2., 2.5, 2.875, 3.])
 c       = np.asarray([0.66, 0.69, 0.63, 0.55, 0.44, 0.30, 0.19])
 betaDeg = np.asarray([27.5, 22., 15.2, 10.2, 6.5, 4.6, 4.2])
@@ -68,10 +69,18 @@ beta    = betaDeg*math.pi/180.
 va      = r*0.
 vt      = r*0.
 gamma   = r*0.
+
 clmin   = -0.3
 clmax   = 1.2
 cl0     = 0.5
-dclda   = 2.*math.pi
+dclda   = 5.8#2.*math.pi
+
+cd0     = 0.0280
+cd2u    = 0.05
+cd2l    = 0.05
+clcd0   = 0.5
+reRef   = 70000
+reExp   = -0.7
 
 
 res = []
