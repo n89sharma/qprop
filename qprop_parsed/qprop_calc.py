@@ -8,7 +8,7 @@ def gammaFunc ( x0, V, omega, c, beta, r, R, B, dclda, cl0, clmax, clmin):
     Wa  = V + va
     gamma1 = getCirculationAndLiftRelation(Wt, Wa, omega, V, r, va, vt, c, beta, dclda, cl0)
     gamma2 = getCirculationAndTangentialVelocityRelation(Wt, Wa, omega, V, r, R, B, va, vt)
-    return np.asarray([Wt/Wa - va/vt, gamma1 - gamma2])
+    return np.asarray([gamma1 - gamma2, Wt/Wa - va/vt])
 
 def getCirculationAndLiftRelation(Wt, Wa, omega, V, r, va, vt, c, beta, dclda, cl0):
     W       = math.sqrt(Wa*Wa + Wt*Wt)
@@ -46,8 +46,14 @@ def getDragCoefficient(cl, Re, Ma, clcd0, cd0, cd2, ReRef, ReExp, mcrit):
 
     return cd
 
-def getTorque(rho, B, W, c, dr):
-    return 0
+def getThrust(rho, B, W, Wa, Wt, c, dr):
+    phi = math.atan(Wa/Wt)
+    return 0.5*B*rho*W*W*(cl*math.cos(phi) - cd*math.sin(phi))*c*dr
+
+def getTorque(rho, B, W, Wa, Wt, c, r, dr):
+    phi = math.atan(Wa/Wt)
+    return 0.5*B*rho*W*W*(cl*math.sin(phi) + cd*math.cos(phi))*c*r*dr
+
 # r       = np.linspace(0.75, R, 7)
 rho     = 1.225     #kg/m^3
 mu      = 1.78E-5   #kg/m/s
@@ -75,4 +81,4 @@ for _r, _c, _beta in zip(r, c, beta):
         [1.,1.],
         args=(V, omega, _c, _beta, _r, R, B, dclda, cl0, clmax, clmin))
     res.append(optRes.x)
-    print(optRes.x)
+    print(omega*_r - optRes.x[1])
