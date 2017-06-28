@@ -109,6 +109,11 @@ C---- get Unix command-line arguments, if any
       CALL GETARG0(9,ARGP9)
       CALL GETARG0(10,ARGP10)
 C
+      OPEN(103,FILE='QPROP_VARS.txt')
+1003  FORMAT(G15.4, F15.4, F15.4, F15.4, F15.4, F15.4,
+     &  F15.4, F15.4, F15.4,
+     &  F15.4)
+C
       IF(ARGP1.EQ.' ') THEN
        WRITE(*,1005)
  1005  FORMAT(
@@ -980,6 +985,8 @@ C---------- Newton iteration to converge on trimmed omega
      &              TP, TP_VEL, TP_OMG, TP_DBE, TP_C, TP_B,
      &              QP, QP_VEL, QP_OMG, QP_DBE, QP_C, QP_B )
 C
+              WRITE(103, 1003) N, C, R, DR, VA, VT, CL, CD, RAD, OMG
+C     &        CL0, DCLDA, CLMIN, CLMAX, MCRIT
               IF(LRPMSET) THEN
 C------------- Residual  =  prop omega  -  prescribed omega
                RES = 0.

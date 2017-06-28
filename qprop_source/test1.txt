@@ -1,23 +1,22 @@
 
 # QPROP Version 1.22
-# 
-# Graupner CAM 6x3 folder                                                         
-# 
-# Speed-400 3321 (6V) direct drive                                                
-#   0.31000      Rmotor (Ohms)                  
-#   0.77000      Io     (Amps)                  
-#    2760.0      Kv     (rpm/Volt)              
-# 
+#
+# Graupner CAM 6x3 folder
+#
+# Speed-400 3321 (6V) direct drive
+#   0.31000      Rmotor (Ohms)
+#   0.77000      Io     (Amps)
+#    2760.0      Kv     (rpm/Volt)
+#
 #   rho =  1.2250     kg/m^3
 #   mu  = 0.17800E-04 kg/m-s
-#   a   =  340.00     m/s   
-# 
+#   a   =  340.00     m/s
+#
 #  1         2        3          4          5         6            7         8       9        10        11        12          13        14        15      16          17           18      19
-# 
+#
 #  V(m/s)    rpm      Dbeta      T(N)       Q(N-m)    Pshaft(W)    Volts     Amps    effmot   effprop   adv       CT          CP        DV(m/s)   eff     Pelec       Pprop        cl_avg  cd_avg
- GVCALC: Not converged.  Res a CL =   1.81607902E-07   3.27703357E-03  0.519052148    
 #   0.000  0.1402E+05  0.000   3.275      0.2992E-01   43.94       8.000    9.4184   0.5831   0.0000   0.00000  0.2342E-01  0.2807E-02  17.1215   0.0000   75.35       0.000       0.7520  0.3783E-01
-# 
+#
 #  radius   chord   beta      Cl       Cd       Re    Mach     effi     effp    Wa(m/s)     Aswirl      adv_wake
    0.0202  0.0170  26.380   1.1945  0.15285    33356  0.084   0.0000   0.6657   7.843       15.97      0.7584E-01
    0.0225  0.0173  24.311   1.1970  0.12899    38003  0.094   0.0000   0.6965   8.413       15.32      0.8084E-01

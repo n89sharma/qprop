@@ -103,14 +103,18 @@ C
 C
       OPEN(101,FILE='TQCALC_RESULTS.txt')
 
-1002  FORMAT(G15.4, F15.4, F15.4, F15.4, F15.4, F15.4,
-     &  F15.4, F15.4, F15.4,
-     &  F15.4, F15.4, E15.4, E15.4)
+1002  FORMAT(G15.4,
+     &  F15.4, F15.4, F15.4, F15.4, F15.4,
+     &  F15.4, F15.4, F15.4, F15.4, E15.4,
+     &  E15.4, F15.4, F15.4, E15.4, E15.4,
+     &  E15.4, E15.4, F15.4)
 C---- go over radial stations
       DO I = 1, N
-        WRITE(101, 1002) I, CL0(I), DCLDA(I), CLMIN(I),
-     &  CLMAX(I), MCRIT(I),
-     &  CD0(I), CD2U(I), CD2L(I), CLCD0(I), REREF(I), REEXP(I)
+        WRITE(101, 1002) I,
+     &  CL0(I),   DCLDA(I),   CLMIN(I),   CLMAX(I),   MCRIT(I),
+     &  CD0(I),   CD2U(I),    CD2L(I),    CLCD0(I),   REREF(I),
+     &  REEXP(I), C(I),       R(I),       VA(I),      VT(I),
+     &  CL(I),    CD(I),      OMG
 C
         BTOT = B(I) + DBE
         CALL GVCALC(C(I),BTOT,R(I),
