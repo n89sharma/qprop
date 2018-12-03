@@ -89,6 +89,27 @@ def nonLinearMotorVoltage(Q, omega, r0, r2, Io0, Io1, Io2, kv, kq, tau):
                         args=[Q, omega, r0, r2, Io0, Io1, Io2, kv, kq, tau])
     v           = vResult.x
     return v
+
+def propellerAndMotor(omega, v):
+    optRes = opt.root(
+        gammaFunc,
+        [1.,1.],
+        args=(V, omega, _c, _beta, _r, R, B, dclda, cl0, clmax, clmin))
+    res.append(optRes.x)
+    va, vt = optRes.x[0], optRes.x[1]
+    Wt  = omega*_r - vt
+    Wa  = V + va
+    W = math.sqrt(Wa*Wa + Wt*Wt)
+    alpha = _beta - math.atan(Wa/Wt)
+    cl = getLiftCoefficient(W, alpha, dclda, cl0)
+    Re = rho*W*_c/mu #kg/m^3  * m/s  * ,m = kg/m/s
+    Ma = W/340.
+    cd = getDragCoefficient(cl, Re, Ma, clcd0, cd0, cd2u, reRef, reExp, mcrit)
+    T_ = getThrust(rho, B, W, Wa, Wt, _c, _dr, cl, cd)
+    Q_ = getTorque(rho, B, W, Wa, Wt, _c, _r, _dr, cl, cd)
+
+    return v - linearMotorVoltage(Q_, omega, resistance, Io, Kv)
+
 # r       = np.linspace(0.75, R, 7)
 rho     = 1.225     #kg/m^3
 mu      = 1.78E-5   #kg/m/s
@@ -124,27 +145,18 @@ reRef   = 70000
 reExp   = -0.7
 mcrit   = 0.9
 
+resistance = 0.125
+Io = 2.3
+Kv = 1890.0
+
 res = []
 T   = []
 Q   = []
 
 for _r, _c, _beta, _dr in zip(r_fine, c_fine, beta_fine, dr):
-    optRes = opt.root(
-        gammaFunc,
-        [1.,1.],
-        args=(V, omega, _c, _beta, _r, R, B, dclda, cl0, clmax, clmin))
-    res.append(optRes.x)
-    va, vt = optRes.x[0], optRes.x[1]
-    Wt  = omega*_r - vt
-    Wa  = V + va
-    W = math.sqrt(Wa*Wa + Wt*Wt)
-    alpha = _beta - math.atan(Wa/Wt)
-    cl = getLiftCoefficient(W, alpha, dclda, cl0)
-    Re = rho*W*_c/mu #kg/m^3  * m/s  * ,m = kg/m/s
-    Ma = W/340.
-    cd = getDragCoefficient(cl, Re, Ma, clcd0, cd0, cd2u, reRef, reExp, mcrit)
-    T.append(getThrust(rho, B, W, Wa, Wt, _c, _dr, cl, cd))
-    Q.append(getTorque(rho, B, W, Wa, Wt, _c, _r, _dr, cl, cd))
+
+    T.append(T_)
+    Q.append(Q_)
 
     print _r, Wa
 
